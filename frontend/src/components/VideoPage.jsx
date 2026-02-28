@@ -34,6 +34,15 @@ export default function VideoPage() {
         return () => clearTimeout(timer);
     }, [searchTerm]);
 
+    // Force native DOM focus when zone changes to search
+    useEffect(() => {
+        if (focusZone === 'search' && searchInputRef.current) {
+            setTimeout(() => {
+                searchInputRef.current?.focus();
+            }, 50);
+        }
+    }, [focusZone]);
+
     useEffect(() => {
         searchLocalMedia(debouncedTerm, 'video', 100)
             .then((data) => setVideos(data))
@@ -63,6 +72,16 @@ export default function VideoPage() {
     const { selectedIndex, page, totalPages, setPage, pageStart, pageEnd } =
         useGridNavigation(videos.length, 4, handleSelect);
 
+    // Auto-scroll to selected item
+    useEffect(() => {
+        if (focusZone === 'grid') {
+            const selectedEl = document.querySelector('.media-card.selected');
+            if (selectedEl) {
+                selectedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+    }, [selectedIndex, page, focusZone]);
+
     const pageVideos = videos.slice(pageStart, pageEnd);
 
     return (
@@ -86,6 +105,11 @@ export default function VideoPage() {
                         if (e.key === 'ArrowDown') {
                             e.preventDefault();
                             setFocusZone('grid');
+                            e.target.blur();
+                        } else if (e.key === 'ArrowUp') {
+                            e.preventDefault();
+                            setFocusZone('nav');
+                            e.target.blur();
                         }
                     }}
                     onFocus={() => {

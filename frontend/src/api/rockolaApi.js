@@ -17,6 +17,10 @@ export const searchLocalMedia = (query, type = 'audio', limit = 20) =>
 export const getStreamUrl = (filePath) =>
     `http://localhost:4000/api/media/stream?path=${encodeURIComponent(filePath)}`;
 
+export const refreshMediaCache = () => api.post('/media/refresh').then(r => r.data);
+
+export const fetchGenres = () => api.get('/media/genres').then(r => r.data);
+
 export const searchYouTube = (query, pageToken = '') => {
     let url = `/youtube/search${query ? `?q=${encodeURIComponent(query)}` : ''}`;
     if (pageToken) url += `${query ? '&' : '?'}pageToken=${pageToken}`;

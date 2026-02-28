@@ -1,25 +1,55 @@
-import React, { useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useGridNavigation } from '../hooks/useGridNavigation';
+import { fetchGenres } from '../api/rockolaApi';
 
-const GENRES = [
-    { id: 'cumbia', name: 'CUMBIA', desc: 'Clásicos y Modernos', icon: '🎵', color: '#f97316' },
-    { id: 'salsa', name: 'SALSA', desc: 'Sensual y Dura', icon: '💃', color: '#22c55e' },
-    { id: 'huayno', name: 'HUAYNO', desc: 'Folclore Peruano', icon: '🏔️', color: '#a855f7' },
-    { id: 'rock', name: 'ROCK PERUANO', desc: '80s, 90s y Actual', icon: '⚡', color: '#eab308' },
-    { id: 'reggaeton', name: 'REGGAETON', desc: 'Old School y Nuevo', icon: '💎', color: '#ec4899' },
-    { id: 'baladas', name: 'BALADAS', desc: 'Románticas', icon: '🎹', color: '#3b82f6' },
-    { id: 'techno', name: 'TECHNO', desc: 'Eurodance 90s', icon: '🎛️', color: '#f97316' },
-    { id: 'chicha', name: 'CHICHA', desc: 'Clásica y Psicodélica', icon: '🎸', color: '#06b6d4' },
-];
+// Helper to generate a consistent color based on string
+const stringToColor = (str) => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const c = (hash & 0x00FFFFFF).toString(16).toUpperCase();
+    return '#' + '00000'.substring(0, 6 - c.length) + c;
+};
+
+// Default generic icon generator
+const getIcon = (str) => {
+    const icons = ['🎵', '🎶', '📻', '🎸', '🥁', '🎹', '🎷', '🎺', '💽', '🎧'];
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return icons[Math.abs(hash) % icons.length];
+};
 
 export default function GenrePage() {
-    const handleSelect = useCallback((idx) => {
-        // Por ahora, seleccionar género podría filtrar, pero el usuario solo pide navegar
+    const [genres, setGenres] = useState([]);
+
+    useEffect(() => {
+        fetchGenres().then(data => {
+            const mapped = data.map(g => ({
+                id: g.toLowerCase().replace(/\s+/g, '-'),
+                name: g.toUpperCase(),
+                desc: 'Catálogo Local',
+                icon: getIcon(g),
+                color: stringToColor(g)
+            }));
+            setGenres(mapped);
+        }).catch(err => console.error("Error fetching genres:", err));
     }, []);
 
-    const { selectedIndex, pageStart, pageEnd } = useGridNavigation(GENRES.length, 4, handleSelect);
+    const handleSelect = useCallback((idx) => {
+        const selectedGenre = genres[idx];
+        if (selectedGenre) {
+            console.log("Género seleccionado:", selectedGenre.name);
+            alert(`Filtrando (simulado) por el género: ${selectedGenre.name}`);
+            // TODO: Navigate or filter state based on genre
+        }
+    }, [genres]);
 
-    const pageGenres = GENRES.slice(pageStart, pageEnd);
+    const { selectedIndex, pageStart, pageEnd } = useGridNavigation(genres.length, 4, handleSelect);
+
+    const pageGenres = genres.slice(pageStart, pageEnd);
 
     return (
         <div>
@@ -28,36 +58,44 @@ export default function GenrePage() {
                 <span className="section-title">SELECCIONAR GÉNERO</span>
             </div>
 
-            <div className="genre-grid">
-                {pageGenres.map((g, i) => {
-                    const isSelected = selectedIndex === i;
-                    return (
-                        <div
-                            key={g.id}
-                            className={`genre-card ${isSelected ? 'selected' : ''}`}
-                            onClick={() => handleSelect(pageStart + i)}
-                            style={
-                                isSelected
-                                    ? { background: `linear-gradient(135deg, ${g.color}, ${g.color}dd)` }
-                                    : {}
-                            }
-                        >
-                            {isSelected && (
-                                <span
-                                    className="media-card-badge selected"
-                                    style={{ position: 'absolute', top: 8, right: 8, left: 'auto' }}
-                                >
-                                    SELECCIONADO
-                                </span>
-                            )}
-                            <span className="genre-card-icon">{g.icon}</span>
-                            <span className="genre-card-arrow">→</span>
-                            <div className="genre-card-name">{g.name}</div>
-                            <div className="genre-card-desc">{g.desc}</div>
-                        </div>
-                    );
-                })}
-            </div>
+            {genres.length === 0 ? (
+                <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+                    Cargando géneros...
+                </div>
+            ) : (
+                <div className="genre-grid">
+                    {pageGenres.map((g, i) => {
+                        const isSelected = selectedIndex === i;
+                        return (
+                            <div
+                                key={g.id}
+                                className={`genre-card ${isSelected ? 'selected' : ''}`}
+                                onClick={() => handleSelect(pageStart + i)}
+                                style={
+                                    isSelected
+                                        ? { background: `linear-gradient(135deg, ${g.color}, ${g.color}dd)` }
+                                        : { borderLeft: `4px solid ${g.color}`, background: 'var(--bg-secondary)' }
+                                }
+                            >
+                                {isSelected && (
+                                    <span
+                                        className="media-card-badge selected"
+                                        style={{ position: 'absolute', top: 8, right: 8, left: 'auto' }}
+                                    >
+                                        SELECCIONADO
+                                    </span>
+                                )}
+                                <span className="genre-card-icon">{g.icon}</span>
+                                <span className="genre-card-arrow">→</span>
+                                <div className="genre-card-name" style={{ color: isSelected ? '#fff' : g.color }}>
+                                    {g.name}
+                                </div>
+                                <div className="genre-card-desc">{g.desc}</div>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
         </div>
     );
 }

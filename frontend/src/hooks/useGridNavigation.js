@@ -100,8 +100,17 @@ export function useGridNavigation(totalItems, columns = 4, onSelect, itemsPerPag
                     const col = selectedIndex % columns;
                     newIndex = Math.min(lastRowStart + col, prevPageItems - 1);
                 } else {
-                    // First row, first page — switch to nav bar
-                    setFocusZone('nav');
+                    // First row, first page — switch to nav bar OR search input
+                    const activeTab = useRockolaStore.getState().activeTab;
+                    if (['audio', 'video', 'youtube'].includes(activeTab)) {
+                        setFocusZone('search');
+                        setTimeout(() => {
+                            const input = document.querySelector('input[type="text"]');
+                            if (input) input.focus();
+                        }, 50);
+                    } else {
+                        setFocusZone('nav');
+                    }
                     return;
                 }
                 break;

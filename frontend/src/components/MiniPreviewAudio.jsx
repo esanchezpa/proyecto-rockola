@@ -2,22 +2,9 @@ import React, { useState, useEffect } from 'react';
 import useRockolaStore from '../store/useRockolaStore';
 
 export default function MiniPreviewAudio({ track }) {
-    const [coverUrl, setCoverUrl] = useState(null);
-    const [imageError, setImageError] = useState(false);
     const audioCoverSize = useRockolaStore((s) => s.audioCoverSize) || 'medium';
-
-    useEffect(() => {
-        if (!track || !track.path) {
-            setCoverUrl(null);
-            setImageError(true);
-            return;
-        }
-
-        // We URL encode the path so the backend can accept it via query param
-        const url = `http://localhost:5000/api/media/cover?path=${encodeURIComponent(track.path)}`;
-        setCoverUrl(url);
-        setImageError(false);
-    }, [track]);
+    // Se solicitó anular la carga asíncrona por rendimiento y fijar una imagen base
+    const coverUrl = '/images/microphone_stage.png';
 
     if (!track) {
         return (
@@ -35,18 +22,11 @@ export default function MiniPreviewAudio({ track }) {
 
     return (
         <div className={`mini-preview-audio size-${audioCoverSize}`}>
-            {coverUrl && !imageError ? (
-                <img
-                    src={coverUrl}
-                    alt="Album Cover"
-                    className="mini-preview-image"
-                    onError={() => setImageError(true)}
-                />
-            ) : (
-                <div className="mini-preview-placeholder">
-                    <span>🎵</span>
-                </div>
-            )}
+            <img
+                src={coverUrl}
+                alt="Album Cover"
+                className="mini-preview-image"
+            />
             <div className="mini-preview-metadata">
                 <div className="mini-preview-title">{track.title}</div>
                 <div className="mini-preview-artist">

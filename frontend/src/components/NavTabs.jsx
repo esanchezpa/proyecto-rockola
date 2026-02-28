@@ -44,8 +44,12 @@ export default function NavTabs() {
             case 'ArrowDown': {
                 e.preventDefault();
                 e.stopPropagation();
-                // Switch focus to grid
-                setFocusZone('grid');
+                // Switch focus to search if it exists, otherwise grid
+                if (['audio', 'video', 'youtube'].includes(activeTab)) {
+                    setFocusZone('search');
+                } else {
+                    setFocusZone('grid');
+                }
                 break;
             }
             case 'Enter': {

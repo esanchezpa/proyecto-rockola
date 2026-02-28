@@ -1468,21 +1468,23 @@ body {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 2px;
   overflow-y: auto;
-  padding-bottom: 24px;
+  padding-bottom: 80px;
 }
 
 .audio-list-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 20px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
+  padding: 6px 12px;
+  background: #17203a;
+  /* Dark blue background */
+  border: 1px solid #23325c;
+  border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s ease;
+  margin-bottom: 2px;
 }
 
 .audio-list-item:hover {
@@ -1491,10 +1493,9 @@ body {
 }
 
 .audio-list-item.selected {
-  background: var(--gradient-blue);
-  border-color: var(--accent-blue);
-  box-shadow: var(--shadow-glow-blue);
-  transform: translateY(-2px);
+  background: #2563eb;
+  border-color: #3b82f6;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
 }
 
 .audio-list-info {
@@ -1507,19 +1508,19 @@ body {
 }
 
 .audio-list-title {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #ffffff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .audio-list-artist {
-  font-size: 13px;
-  color: var(--accent-orange);
-  font-weight: 500;
+  font-size: 11px;
+  color: #f97316;
+  font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

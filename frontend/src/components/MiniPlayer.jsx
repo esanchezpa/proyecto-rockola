@@ -25,6 +25,7 @@ export default function MiniPlayer() {
     const [progress, setProgress] = useState(0);
     const [currentTime, setCurrentTime] = useState('00:00');
     const [selectedControl, setSelectedControl] = useState(0); // 0=play, 1=next, 2=queue
+    const [toast, setToast] = useState(null);
     const mediaRef = useRef(null);
     const prevTrackId = useRef(null);
     const ytIframeRef = useRef(null);
@@ -71,7 +72,7 @@ export default function MiniPlayer() {
                         e.preventDefault();
                         e.stopPropagation();
                         if (selectedControl === 0) togglePlay();
-                        else if (selectedControl === 1) nextTrack();
+                        else if (selectedControl === 1) handleNextTrack();
                         else if (selectedControl === 2) setShowQueue((prev) => !prev);
                     }
                     break;
@@ -273,6 +274,15 @@ export default function MiniPlayer() {
         }
     }, [isYouTube, currentTrack?.videoId, nextTrack, handleYtError]);
 
+    const handleNextTrack = useCallback(() => {
+        if (queue.length === 0) {
+            setToast('🚫 No hay temas en cola');
+            setTimeout(() => setToast(null), 3000);
+        } else {
+            nextTrack();
+        }
+    }, [queue.length, nextTrack]);
+
     if (!currentTrack) return null;
 
     const thumbnail = currentTrack.thumbnail || IMAGES[0];
@@ -445,6 +455,56 @@ export default function MiniPlayer() {
                                     </div>
                                 )}
                             </div>
+                            {showQueue && (
+                                <div className="mini-player-queue-popup">
+                                    <div style={{ fontWeight: 700, marginBottom: 8, fontSize: 12, color: 'var(--text-muted)' }}>
+                                        SIGUIENTES:
+                                    </div>
+                                    {queue.length === 0 && (
+                                        <div style={{ color: 'var(--text-secondary)', fontSize: 12 }}>
+                                            No hay canciones en cola...
+                                        </div>
+                                    )}
+                                    {queue.slice(0, 5).map((qFile, idx) => (
+                                        <div key={idx} style={{
+                                            display: 'flex', alignItems: 'center', gap: 8,
+                                            padding: '4px 0', borderBottom: '1px solid var(--border-color)',
+                                        }}>
+                                            <div style={{ fontSize: 11, flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                {idx + 1}. {qFile.title}
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {queue.length > 5 && (
+                                        <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 4 }}>
+                                            + {queue.length - 5} más...
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Toast Notification for empty queue */}
+                            {toast && (
+                                <div style={{
+                                    position: 'absolute',
+                                    bottom: '100%',
+                                    left: '50%',
+                                    transform: 'translateX(-50%)',
+                                    marginBottom: 8,
+                                    background: 'var(--accent-red)',
+                                    color: '#fff',
+                                    padding: '6px 16px',
+                                    borderRadius: 20,
+                                    fontSize: 12,
+                                    fontWeight: 700,
+                                    whiteSpace: 'nowrap',
+                                    boxShadow: 'var(--shadow-glow-red)',
+                                    zIndex: 100,
+                                    animation: 'fadeInUp 0.3s ease'
+                                }}>
+                                    {toast}
+                                </div>
+                            )}
                         </div>
                     );
                 }

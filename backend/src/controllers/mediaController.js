@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { getSettings } = require('../config/settingsManager');
-const { scanDirectory, getMimeType, searchMediaCache } = require('../services/mediaService');
+const { scanDirectory, getMimeType, searchMediaCache, initializeMediaCache, getUniqueGenres } = require('../services/mediaService');
 const mm = require('music-metadata');
 
 async function listMedia(req, res) {
@@ -109,4 +109,23 @@ function searchMedia(req, res) {
     }
 }
 
-module.exports = { listMedia, streamMedia, getCover, searchMedia };
+async function refreshCache(req, res) {
+    try {
+        const settings = getSettings();
+        await initializeMediaCache(settings);
+        res.status(200).json({ message: 'Caché de medios actualizado exitosamente' });
+    } catch (err) {
+        res.status(500).json({ error: 'Error al actualizar caché', details: err.message });
+    }
+}
+
+function getGenres(req, res) {
+    try {
+        const genres = getUniqueGenres();
+        res.status(200).json(genres);
+    } catch (err) {
+        res.status(500).json({ error: 'Error al obtener géneros', details: err.message });
+    }
+}
+
+module.exports = { listMedia, streamMedia, getCover, searchMedia, refreshCache, getGenres };

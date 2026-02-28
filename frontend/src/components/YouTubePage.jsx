@@ -322,6 +322,16 @@ export default function YouTubePage() {
         return () => window.removeEventListener('keydown', handleKeyDown, true);
     }, [focusZone, focusArea, selCol, selRow, totalCols, handleSelect, getVideoAt, computeScrollCol, searchResults, nextPageToken, loadMoreResults, loadingMore]);
 
+    // Auto-scroll to selected item
+    useEffect(() => {
+        if (focusZone === 'grid') {
+            const selectedEl = document.querySelector('.youtube-card.selected-red');
+            if (selectedEl) {
+                selectedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+    }, [selRow, selCol, focusZone]);
+
     // When entering grid from nav
     useEffect(() => {
         if (focusZone === 'grid') {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRockolaConfig } from '../hooks/useRockolaConfig';
+import { refreshMediaCache } from '../api/rockolaApi';
 import useRockolaStore from '../store/useRockolaStore';
 
 const sizeOptions = [
@@ -96,6 +97,17 @@ export default function ConfigPage() {
             } else {
                 setShowPasswordInput(true);
             }
+        }
+    };
+
+    const handleRefreshCache = async () => {
+        try {
+            alert("Actualizando...");
+            await refreshMediaCache();
+            alert("¡Actualizado!");
+        } catch (error) {
+            console.error(error);
+            alert("Hubo un error al actualizar los datos.");
         }
     };
 
@@ -213,6 +225,32 @@ export default function ConfigPage() {
                         ✅ Modo Administrador ACTIVO — Créditos infinitos
                     </div>
                 )}
+            </div>
+
+            {/* Refresh Cache Panel */}
+            <div style={{
+                background: 'var(--bg-secondary)', padding: '16px 20px', borderRadius: 12,
+                marginTop: 24, border: '1px solid var(--border-color)', display: 'flex',
+                justifyContent: 'space-between', alignItems: 'center'
+            }}>
+                <div>
+                    <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>
+                        🔄 Refrescar Listas
+                    </div>
+                    <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
+                        Fuerza la re-indexación de la música en MP3s y MP4s (Caché)
+                    </div>
+                </div>
+                <button
+                    onClick={handleRefreshCache}
+                    style={{
+                        padding: '8px 20px', background: 'var(--accent-blue)', border: 'none',
+                        borderRadius: 8, color: 'white', fontWeight: 700, cursor: 'pointer',
+                        fontSize: 12, textTransform: 'uppercase',
+                    }}
+                >
+                    Actualizar
+                </button>
             </div>
 
             {/* ==================== Credits Config ==================== */}

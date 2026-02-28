@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const mm = require('music-metadata');
 
 const AUDIO_EXTENSIONS = ['.mp3', '.wav', '.flac', '.ogg', '.m4a', '.wma'];
 const VIDEO_EXTENSIONS = ['.mp4', '.avi', '.mkv', '.webm', '.mov'];
@@ -49,11 +50,24 @@ async function scanDirectory(dirPath, type = 'audio') {
                 title = parts.slice(1).join(' - ').trim();
             }
 
+            let genre = 'Desconocido';
+            if (type === 'audio') {
+                try {
+                    const metadata = await mm.parseFile(fullPath, { duration: false });
+                    if (metadata.common && metadata.common.genre && metadata.common.genre.length > 0) {
+                        genre = metadata.common.genre[0];
+                    }
+                } catch (e) {
+                    // Ignore parsing errors for individual files
+                }
+            }
+
             results.push({
                 id: id++,
                 filename: file,
                 title,
                 artist,
+                genre,
                 path: fullPath,
                 size: stat.size,
                 type,
@@ -131,4 +145,14 @@ function searchMediaCache(query, type, limit = 20) {
     return results;
 }
 
-module.exports = { scanDirectory, getMimeType, initializeMediaCache, searchMediaCache };
+function getUniqueGenres() {
+    const genres = new Set();
+    for (const item of globalMediaCache) {
+        if (item.type === 'audio' && item.genre && item.genre !== 'Desconocido') {
+            genres.add(item.genre);
+        }
+    }
+    return Array.from(genres).sort();
+}
+
+module.exports = { scanDirectory, getMimeType, initializeMediaCache, searchMediaCache, getUniqueGenres };

@@ -27,7 +27,6 @@ export default function AudioPage() {
     const focusZone = useRockolaStore((s) => s.focusZone);
     const setFocusZone = useRockolaStore((s) => s.setFocusZone);
 
-    // Debounce timer
     useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedTerm(searchTerm);
@@ -35,41 +34,24 @@ export default function AudioPage() {
         return () => clearTimeout(timer);
     }, [searchTerm]);
 
+    // Force native DOM focus when zone changes to search
+    useEffect(() => {
+        if (focusZone === 'search' && searchInputRef.current) {
+            setTimeout(() => {
+                searchInputRef.current?.focus();
+            }, 50);
+        }
+    }, [focusZone]);
+
     useEffect(() => {
         searchLocalMedia(debouncedTerm, 'audio', 100)
             .then((data) => {
                 setSongs(data);
-                // Fetch album art for each unique artist
-                const artists = [...new Set(data.map((f) => f.artist).filter((a) => a && a !== 'Desconocido'))];
-                artists.forEach((artist) => {
-                    searchAudioDB(artist)
-                        .then((result) => {
-                            if (result?.artists?.[0]) {
-                                const a = result.artists[0];
-                                const thumb = a.strArtistThumb || a.strArtistFanart || a.strArtistWideThumb;
-                                if (thumb) {
-                                    setArtCache((prev) => ({ ...prev, [artist.toLowerCase()]: thumb }));
-                                }
-                            }
-                        })
-                        .catch(() => { });
-                });
-                data.forEach((file) => {
-                    searchAudioDB(file.title)
-                        .then((result) => {
-                            if (result?.artists?.[0]) {
-                                const a = result.artists[0];
-                                const thumb = a.strArtistThumb || a.strArtistFanart || a.strArtistWideThumb;
-                                if (thumb) {
-                                    setArtCache((prev) => ({ ...prev, [`track-${file.id}`]: thumb }));
-                                }
-                            }
-                        })
-                        .catch(() => { });
-                });
+                // NOTA: Se ha deshabilitado la carga masiva de Last.fm por cuestiones de rendimiento
+                // y se dejará la portada por defecto mostrada en el panel para todos los tracks locales.
             })
             .catch(() => setSongs([]));
-    }, []);
+    }, [debouncedTerm]);
 
     const handleSelect = useCallback((globalIdx) => {
         const file = songs[globalIdx];
@@ -98,9 +80,19 @@ export default function AudioPage() {
         }
     }, [songs, addToQueue, artCache]);
 
-    // Navigation logic: 1 column list, 10 items per page
+    // Navigation logic: 1 column list, 30 items per page
     const { selectedIndex, page, totalPages, setPage, pageStart, pageEnd } =
-        useGridNavigation(songs.length, 1, handleSelect, 10);
+        useGridNavigation(songs.length, 1, handleSelect, 30);
+
+    // Auto-scroll to selected item
+    useEffect(() => {
+        if (focusZone === 'grid') {
+            const selectedEl = document.querySelector('.audio-list-item.selected');
+            if (selectedEl) {
+                selectedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+    }, [selectedIndex, page, focusZone]);
 
     const getThumbnail = (file, globalIdx) => {
         return artCache[`track-${file.id}`]
@@ -133,6 +125,11 @@ export default function AudioPage() {
                         if (e.key === 'ArrowDown') {
                             e.preventDefault();
                             setFocusZone('grid');
+                            e.target.blur();
+                        } else if (e.key === 'ArrowUp') {
+                            e.preventDefault();
+                            setFocusZone('nav');
+                            e.target.blur();
                         }
                     }}
                     onFocus={() => {
@@ -179,8 +176,8 @@ export default function AudioPage() {
                                     }}
                                 >
                                     <div className="audio-list-info">
-                                        <div className="audio-list-title">
-                                            {isSelected && file.title.length > 25 ? (
+                                        <div className="audio-list-title" title={file.title}>
+                                            {isSelected && file.title.length > 50 ? (
                                                 <marquee behavior="alternate" direction="left" scrollamount="3">
                                                     {file.title}
                                                 </marquee>
@@ -189,12 +186,12 @@ export default function AudioPage() {
                                             )}
                                         </div>
                                         <div className="audio-list-artist">
-                                            {file.artist !== 'Desconocido' ? file.artist : 'Archivo Local'}
+                                            {file.artist !== 'Desconocido' ? file.artist : '115'}
                                         </div>
                                     </div>
                                     {isSelected && (
-                                        <div style={{ fontSize: 12, fontWeight: 'bold' }}>
-                                            ↵ Reproducir
+                                        <div style={{ fontSize: 12, fontWeight: 'bold', color: '#fff', marginLeft: 8 }}>
+                                            ↵ Play
                                         </div>
                                     )}
                                 </div>
