@@ -1,0 +1,24 @@
+# Walkthrough: Escalabilidad de Medios Locales en Rockola
+
+Este documento resume los cambios implementados para asegurar que el sistema pueda manejar de manera eficiente miles de archivos locales (MP3/MP4), resolviendo cuellos de botella mediante una arquitectura de indexado en RAM en el backend y Debounce reactivo en el frontend.
+
+## 1. Backend: Sistema de Caché en RAM
+Se implementó un indexador global en memoria al iniciar el servidor para evitar cargas exhaustivas de disco en cada renderizado.
+- **Modificado**: [mediaService.js](file:///c:/Users/edgar/OneDrive/Documentos/ANTIGRAVITY/rockola/backend/src/services/mediaService.js) ahora expone [initializeMediaCache](file:///c:/Users/edgar/OneDrive/Documentos/ANTIGRAVITY/rockola/backend/src/services/mediaService.js#89-108) para poblar la RAM en el arranque y [searchMediaCache](file:///c:/Users/edgar/OneDrive/Documentos/ANTIGRAVITY/rockola/backend/src/services/mediaService.js#109-133) para filtrar resultados a altas velocidades.
+- **Modificado**: [server.js](file:///c:/Users/edgar/OneDrive/Documentos/ANTIGRAVITY/rockola/backend/src/server.js) invoca a este compilador justo en el arranque en el puerto 4000.
+- **Añadido Route/Controller**: Se habilitó `GET /api/media/search` que recibe parámetros de búsqueda por nombre o artista.
+
+## 2. Backend: HTTP Range Requests & Streaming
+La solución para el peso de archivos y reproducción paralizada se solventó explotando la cabecera `Range`.
+- **Validado & Alias Añadido**: El endpoint subyacente de Node `fs.createReadStream` que despacha códigos **206 Partial Content** ya se encontraba soportado. Se re-cableó la API al alias natural `GET /api/media/stream` en [mediaRoutes.js](file:///c:/Users/edgar/OneDrive/Documentos/ANTIGRAVITY/rockola/backend/src/routes/mediaRoutes.js) para consumirlo formalmente como un stream segmentado y dejar intacta toda lógica original.
+
+## 3. Frontend: Buscadores Rápidos y Debounce
+- **Rockola API Act**: [rockolaApi.js](file:///c:/Users/edgar/OneDrive/Documentos/ANTIGRAVITY/rockola/frontend/src/api/rockolaApi.js) integra [searchLocalMedia](file:///c:/Users/edgar/OneDrive/Documentos/ANTIGRAVITY/rockola/frontend/src/api/rockolaApi.js#14-16) apuntando al backend, y [getStreamUrl](file:///c:/Users/edgar/OneDrive/Documentos/ANTIGRAVITY/rockola/frontend/src/api/rockolaApi.js#17-19) ahora monta estricto sobre el endpoint `/stream`.
+- **Buscador (Audio & Video)**: Los componentes de interfaz gráfica (UI) [AudioPage.jsx](file:///c:/Users/edgar/OneDrive/Documentos/ANTIGRAVITY/rockola/frontend/src/components/AudioPage.jsx) y [VideoPage.jsx](file:///c:/Users/edgar/OneDrive/Documentos/ANTIGRAVITY/rockola/frontend/src/components/VideoPage.jsx) recibieron sendas barras de búsqueda de elegante acople, integrando el hook `useEffect` con temporizador de **350ms (Debounce)**, garantizando que el usuario puede teclear largo sin saturar al servidor; solo se emitirá un fetching a React tras la pausa del usuario.
+
+## 4. Resolución de Errores de Teclado
+- **Género**: El sub-menú "Género" presentaba un bloqueo silencioso («trap» del input) debido a la ausencia del hook de escucha principal por teclado.
+- **Solución**: Se implementó [useGridNavigation](file:///c:/Users/edgar/OneDrive/Documentos/ANTIGRAVITY/rockola/frontend/src/hooks/useGridNavigation.js#4-146) dentro de [GenrePage.jsx](file:///c:/Users/edgar/OneDrive/Documentos/ANTIGRAVITY/rockola/frontend/src/components/GenrePage.jsx) y el renderizador ahora escucha el apuntador nativo. El usuario puede ahora navegar cómodamente por las cartas de género, presionar flecha arriba para escapar a los menús principales o presionar `Enter` para engrasar las listas. 
+
+> [!TIP]
+> Dado que mantuvimos sin tocar todo componente relativo al estado del `Youtube` o [Queue](file:///c:/Users/edgar/OneDrive/Documentos/ANTIGRAVITY/rockola/frontend/src/store/useRockolaStore.js#103-146), tu lógica de negocio (cobro de créditos y tiempo límite) opera sin ninguna desviación bajo la mejorada infraestructura.

@@ -1,0 +1,3 @@
+@echo off
+echo Iniciando Rockola en modo Kiosko sin restricciones de Autoplay...
+start msedge.exe --autoplay-policy=no-user-gesture-required "http://localhost:5173"
