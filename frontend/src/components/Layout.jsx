@@ -14,7 +14,7 @@ export default function Layout({ children }) {
     const playerPosition = useRockolaStore((s) => s.playerPosition);
     const requiresInteraction = useRockolaStore((s) => s.requiresInteraction);
 
-    const isVideoTrack = currentTrack?.type === 'video' || currentTrack?.type === 'youtube';
+    const isVisualTrack = !!currentTrack;
 
     // Interaction unblocker
     React.useEffect(() => {
@@ -39,7 +39,7 @@ export default function Layout({ children }) {
     }, [requiresInteraction]);
 
     // Calculate player height as vh
-    const playerVh = isVideoTrack ? playerSize : 0;
+    const playerVh = isVisualTrack ? playerSize : 0;
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
@@ -49,7 +49,7 @@ export default function Layout({ children }) {
             <div style={{
                 flex: 1,
                 display: 'flex',
-                flexDirection: (isVideoTrack && playerPosition !== 'bottom') ? 'row' : 'column',
+                flexDirection: (isVisualTrack && playerPosition !== 'bottom') ? 'row' : 'column',
                 overflow: 'hidden',
                 minHeight: 0,
             }}>
@@ -57,14 +57,14 @@ export default function Layout({ children }) {
                     flex: 1,
                     overflow: 'auto',
                     minWidth: 0,
-                    order: (isVideoTrack && playerPosition === 'left') ? 2 : 1
+                    order: (isVisualTrack && playerPosition === 'left') ? 2 : 1
                 }}>
                     {children}
                 </main>
 
                 <div style={{
-                    order: (isVideoTrack && playerPosition === 'left') ? 1 : 2,
-                    ...(isVideoTrack
+                    order: (isVisualTrack && playerPosition === 'left') ? 1 : 2,
+                    ...(isVisualTrack
                         ? (playerPosition === 'bottom'
                             ? { height: `${playerVh}vh`, width: '100%' }
                             : { width: `${playerVh}%`, minWidth: 280 })

@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { getSettings } = require('../config/settingsManager');
-const { scanDirectory, getMimeType, searchMediaCache, initializeMediaCache, getUniqueGenres } = require('../services/mediaService');
+const { scanDirectory, getMimeType, searchMediaCache, initializeMediaCache, getUniqueGenres, getArtistsByGenre } = require('../services/mediaService');
 const mm = require('music-metadata');
 
 async function listMedia(req, res) {
@@ -101,8 +101,10 @@ function searchMedia(req, res) {
         const query = req.query.q || '';
         const limit = parseInt(req.query.limit, 10) || 20;
         const type = req.query.type || ''; // opcional
+        const genre = req.query.genre || ''; // opcional
+        const artist = req.query.artist || ''; // opcional
 
-        const results = searchMediaCache(query, type, limit);
+        const results = searchMediaCache(query, type, limit, genre, artist);
         res.json(results);
     } catch (err) {
         res.status(500).json({ error: 'Error al buscar en caché RAM', details: err.message });
@@ -128,4 +130,14 @@ function getGenres(req, res) {
     }
 }
 
-module.exports = { listMedia, streamMedia, getCover, searchMedia, refreshCache, getGenres };
+function getArtists(req, res) {
+    try {
+        const genre = req.query.genre || '';
+        const artists = getArtistsByGenre(genre);
+        res.status(200).json(artists);
+    } catch (err) {
+        res.status(500).json({ error: 'Error al obtener artistas', details: err.message });
+    }
+}
+
+module.exports = { listMedia, streamMedia, getCover, searchMedia, refreshCache, getGenres, getArtists };

@@ -9,7 +9,7 @@ import useRockolaStore from '../store/useRockolaStore';
  * - Enter: selects the current item
  * Only active when focusZone === 'grid'
  */
-export function useGridNavigation(totalItems, columns = 4, onSelect, itemsPerPage = 8) {
+export function useGridNavigation(totalItems, columns = 4, onSelect, itemsPerPage = 8, layout = 'vertical') {
     const [page, setPage] = useState(0);
     const selectedIndex = useRockolaStore((s) => s.selectedIndex);
     const setSelectedIndex = useRockolaStore((s) => s.setSelectedIndex);
@@ -36,11 +36,9 @@ export function useGridNavigation(totalItems, columns = 4, onSelect, itemsPerPag
     }, [pageItemCount, selectedIndex, setSelectedIndex]);
 
     const handleKeyDown = useCallback((e) => {
-        // Only handle when grid is focused
         if (focusZone !== 'grid') return;
         if (pageItemCount === 0) return;
 
-        // Don't intercept if user is typing in an input
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
         let newIndex = selectedIndex;
@@ -50,68 +48,116 @@ export function useGridNavigation(totalItems, columns = 4, onSelect, itemsPerPag
             case 'ArrowRight': {
                 e.preventDefault();
                 e.stopPropagation();
-                const row = Math.floor(selectedIndex / columns);
-                const col = selectedIndex % columns;
-                const rowStart = row * columns;
-                const rowEnd = Math.min(rowStart + columns, pageItemCount);
-                const rowLen = rowEnd - rowStart;
-                const nextCol = (col + 1) % rowLen;
-                newIndex = rowStart + nextCol;
+                if (layout === 'horizontal') {
+                    if (selectedIndex + columns < pageItemCount) {
+                        newIndex = selectedIndex + columns;
+                    } else {
+                        setFocusZone('player');
+                    }
+                } else {
+                    const col = selectedIndex % columns;
+                    if (columns === 1 || col === columns - 1 || selectedIndex === pageItemCount - 1) {
+                        setFocusZone('player');
+                        return;
+                    }
+                    if (selectedIndex + 1 < pageItemCount) {
+                        newIndex = selectedIndex + 1;
+                    }
+                }
                 break;
             }
             case 'ArrowLeft': {
                 e.preventDefault();
                 e.stopPropagation();
-                const row = Math.floor(selectedIndex / columns);
-                const col = selectedIndex % columns;
-                const rowStart = row * columns;
-                const rowEnd = Math.min(rowStart + columns, pageItemCount);
-                const rowLen = rowEnd - rowStart;
-                const prevCol = (col - 1 + rowLen) % rowLen;
-                newIndex = rowStart + prevCol;
+                if (layout === 'horizontal') {
+                    if (selectedIndex - columns >= 0) {
+                        newIndex = selectedIndex - columns;
+                    } else {
+                        const state = useRockolaStore.getState();
+                        if (state.selectedArtist) {
+                            useRockolaStore.setState({ selectedArtist: '', viewMode: 'artists', focusZone: 'grid' });
+                            return;
+                        } else if (state.selectedGenre) {
+                            useRockolaStore.setState({ selectedGenre: '', activeTab: 'genero', focusZone: 'grid' });
+                            return;
+                        }
+                    }
+                } else {
+                    const col = selectedIndex % columns;
+                    if (col === 0) {
+                        const state = useRockolaStore.getState();
+                        if (state.selectedArtist) {
+                            useRockolaStore.setState({ selectedArtist: '', viewMode: 'artists', focusZone: 'grid' });
+                            return;
+                        } else if (state.selectedGenre) {
+                            useRockolaStore.setState({ selectedGenre: '', activeTab: 'genero', focusZone: 'grid' });
+                            return;
+                        }
+                    } else if (selectedIndex > 0) {
+                        newIndex = selectedIndex - 1;
+                    }
+                }
                 break;
             }
             case 'ArrowDown': {
                 e.preventDefault();
                 e.stopPropagation();
-                const nextRow = selectedIndex + columns;
-                if (nextRow < pageItemCount) {
-                    newIndex = nextRow;
-                } else if (page < totalPages - 1) {
-                    newPage = page + 1;
-                    newIndex = selectedIndex % columns;
+                if (layout === 'horizontal') {
+                    if (selectedIndex % columns < columns - 1 && selectedIndex + 1 < pageItemCount) {
+                        newIndex = selectedIndex + 1;
+                    }
                 } else {
-                    // Start of player focus unlock
-                    setFocusZone('player');
+                    const nextRow = selectedIndex + columns;
+                    if (nextRow < pageItemCount) {
+                        newIndex = nextRow;
+                    } else if (page < totalPages - 1) {
+                        newPage = page + 1;
+                        newIndex = selectedIndex % columns;
+                        const maxIndex = (totalItems - newPage * itemsPerPage) - 1;
+                        if (newIndex > maxIndex) newIndex = maxIndex;
+                    }
                 }
                 break;
             }
             case 'ArrowUp': {
                 e.preventDefault();
                 e.stopPropagation();
-                const prevRow = selectedIndex - columns;
-                if (prevRow >= 0) {
-                    newIndex = prevRow;
-                } else if (page > 0) {
-                    // Go to previous page, last row
-                    newPage = page - 1;
-                    const prevPageItems = Math.min(itemsPerPage, totalItems - newPage * itemsPerPage);
-                    const lastRowStart = Math.floor((prevPageItems - 1) / columns) * columns;
-                    const col = selectedIndex % columns;
-                    newIndex = Math.min(lastRowStart + col, prevPageItems - 1);
-                } else {
-                    // First row, first page — switch to nav bar OR search input
-                    const activeTab = useRockolaStore.getState().activeTab;
-                    if (['audio', 'video', 'youtube'].includes(activeTab)) {
-                        setFocusZone('search');
-                        setTimeout(() => {
-                            const input = document.querySelector('input[type="text"]');
-                            if (input) input.focus();
-                        }, 50);
+                if (layout === 'horizontal') {
+                    if (selectedIndex % columns > 0) {
+                        newIndex = selectedIndex - 1;
                     } else {
                         setFocusZone('nav');
                     }
-                    return;
+                } else {
+                    const prevRow = selectedIndex - columns;
+                    if (prevRow >= 0) {
+                        newIndex = prevRow;
+                    } else if (page > 0) {
+                        newPage = page - 1;
+                        const prevPageItems = itemsPerPage;
+                        const col = selectedIndex % columns;
+                        const lastRowStart = Math.floor((prevPageItems - 1) / columns) * columns;
+                        newIndex = Math.min(lastRowStart + col, prevPageItems - 1);
+                    } else {
+                        const state = useRockolaStore.getState();
+                        const { activeTab, selectedGenre, selectedArtist } = state;
+
+                        if (['audio', 'video'].includes(activeTab) && selectedGenre && !selectedArtist) {
+                            setFocusZone('viewToggles');
+                            return;
+                        }
+
+                        if (['audio', 'video', 'youtube'].includes(activeTab)) {
+                            setFocusZone('search');
+                            setTimeout(() => {
+                                const input = document.querySelector('input[type="text"]');
+                                if (input) input.focus();
+                            }, 50);
+                        } else {
+                            setFocusZone('nav');
+                        }
+                        return;
+                    }
                 }
                 break;
             }
@@ -135,7 +181,7 @@ export function useGridNavigation(totalItems, columns = 4, onSelect, itemsPerPag
         if (newIndex !== selectedIndex) {
             setSelectedIndex(newIndex);
         }
-    }, [selectedIndex, setSelectedIndex, pageItemCount, columns, onSelect, page, totalPages, pageStart, totalItems, focusZone, setFocusZone]);
+    }, [selectedIndex, setSelectedIndex, pageItemCount, columns, onSelect, page, totalPages, pageStart, totalItems, itemsPerPage, focusZone, setFocusZone, layout]);
 
     useEffect(() => {
         window.addEventListener('keydown', handleKeyDown, true);

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useGridNavigation } from '../hooks/useGridNavigation';
 import { fetchGenres } from '../api/rockolaApi';
+import useRockolaStore from '../store/useRockolaStore';
 
 // Helper to generate a consistent color based on string
 const stringToColor = (str) => {
@@ -32,7 +33,8 @@ export default function GenrePage() {
                 name: g.toUpperCase(),
                 desc: 'Catálogo Local',
                 icon: getIcon(g),
-                color: stringToColor(g)
+                color: stringToColor(g),
+                rawName: g
             }));
             setGenres(mapped);
         }).catch(err => console.error("Error fetching genres:", err));
@@ -41,13 +43,26 @@ export default function GenrePage() {
     const handleSelect = useCallback((idx) => {
         const selectedGenre = genres[idx];
         if (selectedGenre) {
-            console.log("Género seleccionado:", selectedGenre.name);
-            alert(`Filtrando (simulado) por el género: ${selectedGenre.name}`);
-            // TODO: Navigate or filter state based on genre
+            useRockolaStore.getState().setGenreAndNavigate(selectedGenre.rawName);
         }
     }, [genres]);
 
-    const { selectedIndex, pageStart, pageEnd } = useGridNavigation(genres.length, 4, handleSelect);
+    const { selectedIndex, pageStart, pageEnd } = useGridNavigation(
+        genres.length,
+        3, // 3 rows
+        handleSelect,
+        genres.length > 0 ? genres.length : 1,
+        'horizontal'
+    );
+
+    useEffect(() => {
+        if (selectedIndex >= 0) {
+            const selectedEl = document.querySelector('.genre-card.selected');
+            if (selectedEl) {
+                selectedEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            }
+        }
+    }, [selectedIndex]);
 
     const pageGenres = genres.slice(pageStart, pageEnd);
 
@@ -63,7 +78,7 @@ export default function GenrePage() {
                     Cargando géneros...
                 </div>
             ) : (
-                <div className="genre-grid">
+                <div className="carousel-grid">
                     {pageGenres.map((g, i) => {
                         const isSelected = selectedIndex === i;
                         return (

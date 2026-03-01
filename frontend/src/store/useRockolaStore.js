@@ -32,6 +32,7 @@ const useRockolaStore = create(
             idleDurationSec: 25,        // seconds each random preview plays
             idleSources: ['audio', 'video', 'youtube'], // which sources to use
             idleActive: false,          // whether idle mode is currently running
+            idleStopOnNav: false,       // Stop autoplay when a user navigates between menus
 
             // Configuration
             directories: {
@@ -44,6 +45,13 @@ const useRockolaStore = create(
             playerSize: 35,
             playerPosition: 'right',
             audioCoverSize: 'medium', // small, medium, large
+            queueDisplayCount: 5,     // 3 to 10
+
+            // Video view settings
+            videoViewStyle: 'list', // 'list' or 'grid'
+            videoPreviewStart: 15, // seconds
+            videoPreviewDuration: 20, // seconds
+            videoPreviewDelaySec: 30, // seconds to wait before auto-previewing in MiniPlayer
 
             // YouTube pre-cached data
             ytTrending: [],
@@ -54,6 +62,9 @@ const useRockolaStore = create(
             activeTab: 'audio',
             selectedIndex: -1,
             focusZone: 'nav',
+            selectedGenre: '',
+            selectedArtist: '',
+            viewMode: 'list', // 'list' o 'artists'
 
             // Global toast
             queueToast: null,
@@ -165,7 +176,12 @@ const useRockolaStore = create(
             setPlaying: (val) => set({ isPlaying: val }),
 
             // Actions — Navigation
-            setActiveTab: (tab) => set({ activeTab: tab, selectedIndex: -1, focusZone: 'nav' }),
+            setActiveTab: (tab) => set({ activeTab: tab, selectedGenre: '', selectedArtist: '', viewMode: 'list', selectedIndex: -1, focusZone: 'nav' }),
+            setSelectedGenre: (genre) => set({ selectedGenre: genre, selectedArtist: '', viewMode: 'list' }),
+            setGenreAndNavigate: (genre) => set({ selectedGenre: genre, selectedArtist: '', viewMode: 'list', activeTab: 'audio', selectedIndex: -1, focusZone: 'grid' }),
+            setSelectedArtist: (artist) => set({ selectedArtist: artist, selectedIndex: -1, focusZone: 'grid' }),
+            setViewMode: (mode) => set({ viewMode: mode, selectedIndex: -1, focusZone: 'grid' }),
+            setArtistAndNavigate: (artist) => set({ selectedArtist: artist, viewMode: 'list', selectedIndex: -1, focusZone: 'grid' }),
             setSelectedIndex: (i) => set({ selectedIndex: i }),
             setFocusZone: (zone) => {
                 if (zone === 'nav') {
@@ -183,6 +199,13 @@ const useRockolaStore = create(
             setPlayerSize: (size) => set({ playerSize: size }),
             setPlayerPosition: (pos) => set({ playerPosition: pos }),
             setAudioCoverSize: (size) => set({ audioCoverSize: size }),
+            setQueueDisplayCount: (n) => set({ queueDisplayCount: Math.max(3, Math.min(10, n)) }),
+
+            // Actions — Video config
+            setVideoViewStyle: (style) => set({ videoViewStyle: style }),
+            setVideoPreviewStart: (n) => set({ videoPreviewStart: n }),
+            setVideoPreviewDuration: (n) => set({ videoPreviewDuration: n }),
+            setVideoPreviewDelaySec: (n) => set({ videoPreviewDelaySec: n }),
 
             // Actions — Credits config
             setCreditsPerCoin: (n) => set({ creditsPerCoin: n }),
@@ -212,6 +235,10 @@ const useRockolaStore = create(
                 playerSize: state.playerSize,
                 playerPosition: state.playerPosition,
                 audioCoverSize: state.audioCoverSize,
+                queueDisplayCount: state.queueDisplayCount,
+                videoViewStyle: state.videoViewStyle,
+                videoPreviewStart: state.videoPreviewStart,
+                videoPreviewDuration: state.videoPreviewDuration,
                 creditsPerCoin: state.creditsPerCoin,
                 ytMinutesPerCredit: state.ytMinutesPerCredit,
                 selectionAlertSec: state.selectionAlertSec,
@@ -221,6 +248,7 @@ const useRockolaStore = create(
                 idleTimeoutPausedSec: state.idleTimeoutPausedSec,
                 idleDurationSec: state.idleDurationSec,
                 idleSources: state.idleSources,
+                videoPreviewDelaySec: state.videoPreviewDelaySec,
             }),
         }
     )

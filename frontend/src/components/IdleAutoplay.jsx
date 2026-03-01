@@ -304,11 +304,14 @@ export default function IdleAutoplay() {
         }
 
         const handleUserActivity = (e) => {
-            // We just reset the timer on ANY keystroke. 
-            // We NO LONGER stop the idle track because the user should be able to type in Search, 
-            // press Backspace, or navigate the UI without the music stopping abruptly. 
-            // The idle track will naturally stop when they explicitly PLAY a song (via addToQueue).
-            scheduleIdleTimer();
+            const store = useRockolaStore.getState();
+            if (store.idleStopOnNav && isIdleRef.current) {
+                // If setting "idleStopOnNav" is enabled and we are in idle state, pressing keys will instantly silence idle.
+                stopIdleMode();
+            } else {
+                // Otherwise (by default), pressing keys while idle simply allows them to navigate while background music continues.
+                scheduleIdleTimer();
+            }
         };
 
         // Only track intentional interactions (excluding mouse)

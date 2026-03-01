@@ -10,10 +10,18 @@ const IMAGES = [
     '/images/concert_crowd.png',
 ];
 
+const formatTimeDuration = (seconds) => {
+    if (!seconds || isNaN(seconds)) return '00:00';
+    const mm = String(Math.floor(seconds / 60)).padStart(2, '0');
+    const ss = String(Math.floor(seconds % 60)).padStart(2, '0');
+    return `${mm}:${ss}`;
+};
+
 export default function MiniPlayer() {
     const currentTrack = useRockolaStore((s) => s.currentTrack);
     const isPlaying = useRockolaStore((s) => s.isPlaying);
     const queue = useRockolaStore((s) => s.queue);
+    const queueDisplayCount = useRockolaStore((s) => s.queueDisplayCount) || 5;
     const togglePlay = useRockolaStore((s) => s.togglePlay);
     const nextTrack = useRockolaStore((s) => s.nextTrack);
     const focusZone = useRockolaStore((s) => s.focusZone);
@@ -21,10 +29,9 @@ export default function MiniPlayer() {
     const playerPosition = useRockolaStore((s) => s.playerPosition);
     const consumeYtTime = useRockolaStore((s) => s.consumeYtTime);
     const ytTimeRemaining = useRockolaStore((s) => s.ytTimeRemaining);
-    const [showQueue, setShowQueue] = useState(false);
     const [progress, setProgress] = useState(0);
     const [currentTime, setCurrentTime] = useState('00:00');
-    const [selectedControl, setSelectedControl] = useState(0); // 0=play, 1=next, 2=queue
+    const [selectedControl, setSelectedControl] = useState(0); // 0=play, 1=next
     const [toast, setToast] = useState(null);
     const mediaRef = useRef(null);
     const prevTrackId = useRef(null);
@@ -34,7 +41,7 @@ export default function MiniPlayer() {
     const isYouTube = currentTrack?.type === 'youtube';
     const isAudio = currentTrack && !isVideo && !isYouTube;
 
-    const CONTROLS_COUNT = 3; // play/pause, next, queue
+    const CONTROLS_COUNT = 2; // play/pause, next
 
     // Keyboard navigation for player controls
     useEffect(() => {
@@ -73,7 +80,6 @@ export default function MiniPlayer() {
                         e.stopPropagation();
                         if (selectedControl === 0) togglePlay();
                         else if (selectedControl === 1) handleNextTrack();
-                        else if (selectedControl === 2) setShowQueue((prev) => !prev);
                     }
                     break;
                 }
@@ -85,6 +91,12 @@ export default function MiniPlayer() {
         window.addEventListener('keydown', handleKeyDown, true);
         return () => window.removeEventListener('keydown', handleKeyDown, true);
     }, [focusZone, currentTrack, selectedControl, togglePlay, nextTrack]);
+
+    // Plan de implementación actualizado:
+    // - **Nueva Sección de Cola**: Incrustar una lista detallada de las próximas canciones directamente debajo de los controles del MiniPlayer, eliminando el popup flotante.
+    // - **Visualización de Audio en Panel Derecho**: Modificar el componente para que, al reproducir audio, se muestre la carátula o un visualizador en la misma zona derecha donde aparecen los videos de YouTube/Locales.
+    // - **Consolidación de Diseño**: Deshabilitar el "pre-preview" de álbum flotante y reutilizar el área de preview principal para mostrar la información del audio actual.
+    // - **Consolidación de "SIGUIENTES"**: Eliminar el texto estático de "SIGUIENTES" y reemplazarlo por la nueva sección interactiva integrada en el cuerpo del MiniPlayer.
 
     // YouTube timer countdown — consume 1 second every second while YT is playing
     useEffect(() => {
@@ -121,6 +133,11 @@ export default function MiniPlayer() {
                 if (el && currentTrack.sourceUrl && !isYouTube) {
                     el.src = currentTrack.sourceUrl;
                     el.load();
+
+                    if (currentTrack.savedTime) {
+                        el.currentTime = currentTrack.savedTime;
+                    }
+
                     el.play().catch((e) => {
                         console.warn('Auto-play local media failed:', e);
                         if (e.name === 'NotAllowedError') {
@@ -225,7 +242,11 @@ export default function MiniPlayer() {
             // If player already exists, just load the new video
             if (ytPlayerRef.current && typeof ytPlayerRef.current.loadVideoById === 'function') {
                 try {
-                    ytPlayerRef.current.loadVideoById(currentTrack.videoId);
+                    if (currentTrack.savedTime) {
+                        ytPlayerRef.current.loadVideoById(currentTrack.videoId, currentTrack.savedTime);
+                    } else {
+                        ytPlayerRef.current.loadVideoById(currentTrack.videoId);
+                    }
                 } catch (err) {
                     console.warn('loadVideoById failed:', err);
                     handleYtError({ data: 101 });
@@ -274,6 +295,55 @@ export default function MiniPlayer() {
         }
     }, [isYouTube, currentTrack?.videoId, nextTrack, handleYtError]);
 
+    // Listener de eventos globales para Vista Previa
+    useEffect(() => {
+        const handleStartPreview = (e) => {
+            const previewTrack = e.detail.track;
+            const current = useRockolaStore.getState().currentTrack;
+
+            let savedTime = 0;
+            if (current && !current.isPreviewMode) {
+                if (current.type === 'youtube' && ytPlayerRef.current?.getCurrentTime) {
+                    savedTime = ytPlayerRef.current.getCurrentTime();
+                } else if (mediaRef.current) {
+                    savedTime = mediaRef.current.currentTime;
+                }
+
+                useRockolaStore.setState({ pausedTrack: { ...current, savedTime } });
+            }
+
+            useRockolaStore.setState({
+                currentTrack: previewTrack,
+                isPlaying: true
+            });
+        };
+
+        const handleStopPreview = () => {
+            const current = useRockolaStore.getState().currentTrack;
+            const paused = useRockolaStore.getState().pausedTrack;
+
+            if (current?.isPreviewMode) {
+                if (paused) {
+                    useRockolaStore.setState({
+                        currentTrack: paused,
+                        pausedTrack: null,
+                        isPlaying: true
+                    });
+                } else {
+                    useRockolaStore.setState({ currentTrack: null, isPlaying: false });
+                }
+            }
+        };
+
+        window.addEventListener('START_PREVIEW', handleStartPreview);
+        window.addEventListener('STOP_PREVIEW', handleStopPreview);
+
+        return () => {
+            window.removeEventListener('START_PREVIEW', handleStartPreview);
+            window.removeEventListener('STOP_PREVIEW', handleStopPreview);
+        };
+    }, []);
+
     const handleNextTrack = useCallback(() => {
         if (queue.length === 0) {
             setToast('🚫 No hay temas en cola');
@@ -282,6 +352,75 @@ export default function MiniPlayer() {
             nextTrack();
         }
     }, [queue.length, nextTrack]);
+
+    const renderEmbeddedQueue = () => {
+        return (
+            <div className="mini-player-embedded-queue" style={{
+                marginTop: 12,
+                paddingTop: 12,
+                borderTop: '1px solid rgba(255,255,255,0.1)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 8
+            }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-secondary)', display: 'flex', justifyContent: 'space-between' }}>
+                    <span>COLA DE REPRODUCCIÓN ({queue.length})</span>
+                    {queue.length > 0 && <span style={{ fontSize: 11, color: 'var(--accent-orange)' }}>Próximos temas</span>}
+                </div>
+
+                {queue.length === 0 ? (
+                    <div style={{ fontSize: 13, color: 'var(--text-muted)', fontStyle: 'italic', padding: '8px 0' }}>
+                        No hay canciones en cola...
+                    </div>
+                ) : (
+                    <div style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 6,
+                        maxHeight: '150px',
+                        overflowY: 'auto',
+                        paddingRight: 8
+                    }}>
+                        {queue.slice(0, queueDisplayCount).map((track, i) => (
+                            <div key={track.id || i} style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                padding: '8px 10px',
+                                background: i === 0 ? 'rgba(234, 179, 8, 0.1)' : 'rgba(255,255,255,0.03)',
+                                borderLeft: i === 0 ? '3px solid var(--accent-yellow)' : '3px solid transparent',
+                                borderRadius: 6,
+                                gap: 12,
+                                transition: 'background 0.2s',
+                                cursor: 'pointer'
+                            }} onClick={() => {
+                                if (window.confirm(`¿Seguro que deseas sacar "${track.title}" de la cola?`)) {
+                                    useRockolaStore.getState().removeFromQueue(track.id);
+                                }
+                            }}>
+                                <span style={{ fontSize: 12, color: i === 0 ? 'var(--accent-yellow)' : 'var(--text-muted)', minWidth: 20 }}>
+                                    #{i + 1}
+                                </span>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                    <div style={{ fontSize: 13, fontWeight: i === 0 ? 700 : 600, color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                        {track.title}
+                                    </div>
+                                    <div style={{ fontSize: 11, color: i === 0 ? 'var(--accent-yellow)' : 'var(--text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                        {track.artist || 'Desconocido'}
+                                    </div>
+                                </div>
+                                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>✖</span>
+                            </div>
+                        ))}
+                        {queue.length > queueDisplayCount && (
+                            <div style={{ fontSize: 11, color: 'var(--text-muted)', textAlign: 'center', marginTop: 4 }}>
+                                + {queue.length - queueDisplayCount} canciones más en espera
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
+        );
+    };
 
     if (!currentTrack) return null;
 
@@ -353,6 +492,29 @@ export default function MiniPlayer() {
                 </div>
             )}
 
+            {/* Audio cover art area (same location as video) */}
+            {isAudio && (
+                <div className="video-player-area" style={{
+                    position: 'relative',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: '#000',
+                    height: '100%'
+                }}>
+                    <img
+                        src={thumbnail}
+                        alt={currentTrack.title}
+                        style={{
+                            maxWidth: '100%',
+                            maxHeight: '100%',
+                            objectFit: 'contain',
+                            boxShadow: '0 4px 20px rgba(0,0,0,0.5)'
+                        }}
+                    />
+                </div>
+            )}
+
             {/* YouTube player area — stable container, reuses YT.Player */}
             {isYouTube && currentTrack.videoId && (
                 <div className="video-player-area" style={{ position: 'relative' }}>
@@ -380,10 +542,9 @@ export default function MiniPlayer() {
                 </div>
             )}
 
-            {/* Mini player bar */}
             {(() => {
-                const isVideoTrack = currentTrack?.type === 'video' || currentTrack?.type === 'youtube';
-                const isCompact = isVideoTrack && playerPosition !== 'bottom' && playerSize <= 35;
+                const isVisualTrack = isVideo || isYouTube || isAudio;
+                const isCompact = isVisualTrack && playerPosition !== 'bottom' && playerSize <= 35;
 
                 if (isCompact) {
                     // ===== COMPACT TWO-ROW LAYOUT =====
@@ -394,32 +555,43 @@ export default function MiniPlayer() {
                             </div>
                             {/* Row 1: Controls */}
                             <div style={{
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                gap: 8, padding: '8px 12px 4px',
+                                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                padding: '8px 12px 4px',
                             }}>
-                                <span className="mini-player-time">{currentTime}</span>
-                                {ytTimeBadge('small')}
-                                <button
-                                    className={`mini-player-btn ${focusZone === 'player' && selectedControl === 0 ? 'player-control-selected' : ''}`}
-                                    onClick={togglePlay}
-                                    title={isPlaying ? 'Pausa' : 'Reproducir'}
-                                >
-                                    {isPlaying ? '⏸' : '▶'}
-                                </button>
-                                <button
-                                    className={`mini-player-btn ${focusZone === 'player' && selectedControl === 1 ? 'player-control-selected' : ''}`}
-                                    onClick={nextTrack}
-                                    title="Siguiente"
-                                >
-                                    ⏭
-                                </button>
-                                <button
-                                    className={`mini-player-btn ${showQueue ? 'active-btn' : ''} ${focusZone === 'player' && selectedControl === 2 ? 'player-control-selected' : ''}`}
-                                    onClick={() => setShowQueue(!showQueue)}
-                                    title="Cola de reproducción"
-                                >
-                                    🎵 <span className="mini-player-queue-count">{queue.length}</span>
-                                </button>
+                                {/* Empty space for symmetry */}
+                                <div style={{ flex: 1 }}></div>
+
+                                {/* Center Controls */}
+                                <div style={{
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8
+                                }}>
+                                    <div className="mini-player-time" style={{ display: 'flex', alignItems: 'center', fontWeight: 'bold' }}>
+                                        <span style={{ fontSize: 16, color: 'var(--accent-orange)' }}>{currentTime}</span>
+                                        <span style={{ fontSize: 18, color: '#4ADE80', fontWeight: 900, marginLeft: 6 }}>
+                                            / {currentTrack.duration ? formatTimeDuration(currentTrack.duration) : '00:00'}
+                                        </span>
+                                    </div>
+                                    {ytTimeBadge('small')}
+                                    <button
+                                        className={`mini-player-btn ${focusZone === 'player' && selectedControl === 0 ? 'player-control-selected' : ''}`}
+                                        onClick={togglePlay}
+                                        title={isPlaying ? 'Pausa' : 'Reproducir'}
+                                    >
+                                        {isPlaying ? '⏸' : '▶'}
+                                    </button>
+                                    <button
+                                        className={`mini-player-btn ${focusZone === 'player' && selectedControl === 1 ? 'player-control-selected' : ''}`}
+                                        onClick={nextTrack}
+                                        title="Siguiente"
+                                        disabled={currentTrack?.id?.startsWith('idle-')}
+                                        style={{ opacity: currentTrack?.id?.startsWith('idle-') ? 0.3 : 1 }}
+                                    >
+                                        ⏭
+                                    </button>
+                                </div>
+
+                                {/* Empty right area to balance the center controls */}
+                                <div style={{ flex: 1 }}></div>
                             </div>
                             {/* Row 2: Track info + next */}
                             <div style={{
@@ -455,35 +627,6 @@ export default function MiniPlayer() {
                                     </div>
                                 )}
                             </div>
-                            {showQueue && (
-                                <div className="mini-player-queue-popup">
-                                    <div style={{ fontWeight: 700, marginBottom: 8, fontSize: 12, color: 'var(--text-muted)' }}>
-                                        SIGUIENTES:
-                                    </div>
-                                    {queue.length === 0 && (
-                                        <div style={{ color: 'var(--text-secondary)', fontSize: 12 }}>
-                                            No hay canciones en cola...
-                                        </div>
-                                    )}
-                                    {queue.slice(0, 5).map((qFile, idx) => (
-                                        <div key={idx} style={{
-                                            display: 'flex', alignItems: 'center', gap: 8,
-                                            padding: '4px 0', borderBottom: '1px solid var(--border-color)',
-                                        }}>
-                                            <div style={{ fontSize: 11, flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                                {idx + 1}. {qFile.title}
-                                            </div>
-                                        </div>
-                                    ))}
-                                    {queue.length > 5 && (
-                                        <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 4 }}>
-                                            + {queue.length - 5} más...
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-
-                            {/* Toast Notification for empty queue */}
                             {toast && (
                                 <div style={{
                                     position: 'absolute',
@@ -505,6 +648,9 @@ export default function MiniPlayer() {
                                     {toast}
                                 </div>
                             )}
+
+                            {/* Insert the unified queue component here */}
+                            {renderEmbeddedQueue()}
                         </div>
                     );
                 }
@@ -528,7 +674,12 @@ export default function MiniPlayer() {
                                     <div className="mini-player-artist">{trackArtist}</div>
                                 </div>
                                 {ytTimeBadge('normal')}
-                                <span className="mini-player-time">{currentTime}</span>
+                                <div className="mini-player-time" style={{ display: 'flex', alignItems: 'center', fontWeight: 'bold' }}>
+                                    <span style={{ fontSize: 18, color: 'var(--accent-orange)' }}>{currentTime}</span>
+                                    <span style={{ fontSize: 20, color: '#4ADE80', fontWeight: 900, marginLeft: 6 }}>
+                                        / {currentTrack.duration ? formatTimeDuration(currentTrack.duration) : '00:00'}
+                                    </span>
+                                </div>
                             </div>
                             <div className="mini-player-controls">
                                 <button
@@ -542,69 +693,20 @@ export default function MiniPlayer() {
                                     className={`mini-player-btn ${focusZone === 'player' && selectedControl === 1 ? 'player-control-selected' : ''}`}
                                     onClick={nextTrack}
                                     title="Siguiente"
+                                    disabled={currentTrack?.id?.startsWith('idle-')}
+                                    style={{ opacity: currentTrack?.id?.startsWith('idle-') ? 0.3 : 1 }}
                                 >
                                     ⏭
                                 </button>
-                                <button
-                                    className={`mini-player-btn ${showQueue ? 'active-btn' : ''} ${focusZone === 'player' && selectedControl === 2 ? 'player-control-selected' : ''}`}
-                                    onClick={() => setShowQueue(!showQueue)}
-                                    title="Cola de reproducción"
-                                >
-                                    🎵 <span className="mini-player-queue-count">{queue.length}</span>
-                                </button>
                             </div>
-                            {nextInQueue && (
-                                <div className="mini-player-next">
-                                    <span className="mini-player-next-label">SIGUIENTE:</span>
-                                    <span className="mini-player-next-title">
-                                        {nextInQueue.title?.includes(' - ')
-                                            ? nextInQueue.title.split(' - ')[1]
-                                            : nextInQueue.title}
-                                    </span>
-                                    {nextInQueue.title?.includes(' - ') && (
-                                        <span className="mini-player-next-artist">
-                                            — {nextInQueue.title.split(' - ')[0]}
-                                        </span>
-                                    )}
-                                </div>
-                            )}
                         </div>
+
+                        {/* FUSION DE COLA E INCORPORACION DE "SIGUIENTES" */}
+                        {renderEmbeddedQueue()}
                     </div>
                 );
             })()}
 
-            {/* Queue overlay */}
-            {showQueue && (
-                <div className="queue-overlay">
-                    <div className="queue-overlay-header">
-                        <span>🎵 Cola de Reproducción ({queue.length})</span>
-                        <button onClick={() => setShowQueue(false)} style={{ background: 'none', border: 'none', color: 'white', fontSize: 18, cursor: 'pointer' }}>✕</button>
-                    </div>
-                    {queue.length === 0 ? (
-                        <div className="queue-overlay-empty">
-                            No hay canciones en la cola
-                        </div>
-                    ) : (
-                        <div className="queue-overlay-list">
-                            {queue.map((track, i) => (
-                                <div key={track.id} className="queue-overlay-item">
-                                    <span className="queue-overlay-num">#{i + 1}</span>
-                                    <img
-                                        className="queue-overlay-thumb"
-                                        src={track.thumbnail || IMAGES[(i + 1) % IMAGES.length]}
-                                        alt={track.title}
-                                        onError={(e) => { e.target.src = IMAGES[0]; }}
-                                    />
-                                    <div className="queue-overlay-info">
-                                        <div className="queue-overlay-title">{track.title}</div>
-                                        <div className="queue-overlay-type">{track.type === 'youtube' ? '🌐 YouTube' : '💾 Local'}</div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-            )}
         </>
     );
 }

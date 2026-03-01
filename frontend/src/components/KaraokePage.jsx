@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MediaCard from './MediaCard';
 import { useQueue } from '../hooks/useQueue';
+import { useGridNavigation } from '../hooks/useGridNavigation';
+import useRockolaStore from '../store/useRockolaStore';
 
 const MOCK_KARAOKE_POPULAR = [
     { id: 'k1', title: 'Grupo 5 - Motor y Motivo', subtitle: 'PISTA ORIGINAL', imageIndex: 0 },
@@ -15,12 +17,13 @@ const MOCK_DUOS = [
 ];
 
 export default function KaraokePage() {
-    const [selectedId, setSelectedId] = useState('k1');
     const { addToQueue } = useQueue();
     const [toast, setToast] = useState(null);
+    const focusZone = useRockolaStore((s) => s.focusZone);
+
+    const allTracks = [...MOCK_KARAOKE_POPULAR, ...MOCK_DUOS];
 
     const handleSelect = (track) => {
-        setSelectedId(track.id);
         const success = addToQueue({
             id: track.id,
             title: track.title,
@@ -36,6 +39,23 @@ export default function KaraokePage() {
         }
     };
 
+    const handleSelectGlobal = (globalIdx) => {
+        const track = allTracks[globalIdx];
+        if (track) handleSelect(track);
+    };
+
+    const { selectedIndex } = useGridNavigation(allTracks.length, 3, handleSelectGlobal, 12);
+
+    // Auto-scroll
+    useEffect(() => {
+        if (focusZone === 'grid') {
+            const selectedEl = document.querySelector('.media-card.selected-red');
+            if (selectedEl) {
+                selectedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+    }, [selectedIndex, focusZone]);
+
     return (
         <div>
             {toast && <div className="toast">{toast}</div>}
@@ -46,32 +66,35 @@ export default function KaraokePage() {
             </div>
 
             <div className="media-grid three-cols">
-                {MOCK_KARAOKE_POPULAR.map((k) => (
-                    <MediaCard
-                        key={k.id}
-                        title={k.title}
-                        imageIndex={k.imageIndex}
-                        selected={selectedId === k.id}
-                        selectedType="red"
-                        badge={selectedId === k.id ? '🎤 SELECCIONADO' : 'KARAOKE'}
-                        badgeType={selectedId === k.id ? 'playing' : 'karaoke'}
-                        onClick={() => handleSelect(k)}
-                    >
-                        <div
-                            className="media-card-subtitle"
-                            style={{
-                                color:
-                                    k.subtitle === 'PISTA ORIGINAL'
-                                        ? '#ef4444'
-                                        : 'var(--text-muted)',
-                                fontWeight: k.subtitle === 'PISTA ORIGINAL' ? 600 : 400,
-                            }}
+                {MOCK_KARAOKE_POPULAR.map((k, i) => {
+                    const isSelected = selectedIndex === i && focusZone === 'grid';
+                    return (
+                        <MediaCard
+                            key={k.id}
+                            title={k.title}
+                            imageIndex={k.imageIndex}
+                            selected={isSelected}
+                            selectedType="red"
+                            badge={isSelected ? '🎤 SELECCIONADO' : 'KARAOKE'}
+                            badgeType={isSelected ? 'playing' : 'karaoke'}
+                            onClick={() => handleSelect(k)}
                         >
-                            {k.subtitle === 'PISTA ORIGINAL' ? '● ' : ''}
-                            {k.subtitle}
-                        </div>
-                    </MediaCard>
-                ))}
+                            <div
+                                className="media-card-subtitle"
+                                style={{
+                                    color:
+                                        k.subtitle === 'PISTA ORIGINAL'
+                                            ? '#ef4444'
+                                            : 'var(--text-muted)',
+                                    fontWeight: k.subtitle === 'PISTA ORIGINAL' ? 600 : 400,
+                                }}
+                            >
+                                {k.subtitle === 'PISTA ORIGINAL' ? '● ' : ''}
+                                {k.subtitle}
+                            </div>
+                        </MediaCard>
+                    );
+                })}
             </div>
 
             <div className="section-header" style={{ marginTop: 32 }}>
@@ -80,20 +103,24 @@ export default function KaraokePage() {
             </div>
 
             <div className="media-grid three-cols">
-                {MOCK_DUOS.map((k) => (
-                    <MediaCard
-                        key={k.id}
-                        title={k.title}
-                        imageIndex={k.imageIndex}
-                        selected={selectedId === k.id}
-                        selectedType="red"
-                        badge="KARAOKE"
-                        badgeType="karaoke"
-                        onClick={() => handleSelect(k)}
-                    >
-                        <div className="media-card-subtitle">{k.subtitle}</div>
-                    </MediaCard>
-                ))}
+                {MOCK_DUOS.map((k, i) => {
+                    const globalIdx = MOCK_KARAOKE_POPULAR.length + i;
+                    const isSelected = selectedIndex === globalIdx && focusZone === 'grid';
+                    return (
+                        <MediaCard
+                            key={k.id}
+                            title={k.title}
+                            imageIndex={k.imageIndex}
+                            selected={isSelected}
+                            selectedType="red"
+                            badge="KARAOKE"
+                            badgeType="karaoke"
+                            onClick={() => handleSelect(k)}
+                        >
+                            <div className="media-card-subtitle">{k.subtitle}</div>
+                        </MediaCard>
+                    );
+                })}
             </div>
         </div>
     );

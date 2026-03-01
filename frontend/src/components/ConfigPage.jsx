@@ -9,6 +9,8 @@ const sizeOptions = [
     { value: 50, label: '50%' },
 ];
 
+const queueDisplayOptions = [3, 4, 5, 8, 10];
+
 const positionOptions = [
     { value: 'left', label: 'Izquierda', icon: '◧' },
     { value: 'right', label: 'Derecha', icon: '◨' },
@@ -21,6 +23,14 @@ const selectionAlertOptions = [5, 10, 20, 30, 45, 60];
 const idleTimeoutOptions = [0.25, 0.5, 1, 2, 3, 5, 10];
 const idlePausedOptions = [15, 30, 60, 120, 300];
 const idleDurationOptions = [15, 20, 25, 30, 45, 60];
+
+const viewStyleOptions = [
+    { value: 'grid', label: 'Cuadrícula' },
+    { value: 'list', label: 'Lista' },
+];
+const previewStartOptions = [0, 5, 10, 15, 20, 30, 60];
+const previewDurationOptions = [10, 15, 20, 30, 45, 60];
+const previewDelayOptions = [10, 20, 30, 45, 60];
 
 const coverSizeOptions = [
     { value: 'small', label: 'Pequeño' },
@@ -35,9 +45,21 @@ export default function ConfigPage() {
     const playerSize = useRockolaStore((s) => s.playerSize);
     const playerPosition = useRockolaStore((s) => s.playerPosition);
     const audioCoverSize = useRockolaStore((s) => s.audioCoverSize);
+    const queueDisplayCount = useRockolaStore((s) => s.queueDisplayCount);
     const setPlayerSize = useRockolaStore((s) => s.setPlayerSize);
     const setPlayerPosition = useRockolaStore((s) => s.setPlayerPosition);
     const setAudioCoverSize = useRockolaStore((s) => s.setAudioCoverSize);
+    const setQueueDisplayCount = useRockolaStore((s) => s.setQueueDisplayCount);
+
+    // Video view settings
+    const videoViewStyle = useRockolaStore((s) => s.videoViewStyle);
+    const videoPreviewStart = useRockolaStore((s) => s.videoPreviewStart);
+    const videoPreviewDuration = useRockolaStore((s) => s.videoPreviewDuration);
+    const videoPreviewDelaySec = useRockolaStore((s) => s.videoPreviewDelaySec);
+    const setVideoViewStyle = useRockolaStore((s) => s.setVideoViewStyle);
+    const setVideoPreviewStart = useRockolaStore((s) => s.setVideoPreviewStart);
+    const setVideoPreviewDuration = useRockolaStore((s) => s.setVideoPreviewDuration);
+    const setVideoPreviewDelaySec = useRockolaStore((s) => s.setVideoPreviewDelaySec);
 
     // Credits config
     const creditsPerCoin = useRockolaStore((s) => s.creditsPerCoin);
@@ -60,6 +82,7 @@ export default function ConfigPage() {
     const setIdleTimeoutPausedSec = useRockolaStore((s) => s.setIdleTimeoutPausedSec);
     const setIdleDurationSec = useRockolaStore((s) => s.setIdleDurationSec);
     const setIdleSources = useRockolaStore((s) => s.setIdleSources);
+    const idleStopOnNav = useRockolaStore((s) => s.idleStopOnNav);
 
     const [audio, setAudio] = useState(directories.audio);
     const [video, setVideo] = useState(directories.video);
@@ -250,6 +273,32 @@ export default function ConfigPage() {
                     }}
                 >
                     Actualizar
+                </button>
+            </div>
+
+            {/* ==================== Autoplay Settings ==================== */}
+            <div style={{
+                background: 'var(--bg-card)', padding: '16px 20px', borderRadius: 12,
+                marginTop: 24, border: '1px solid var(--border-color)', display: 'flex',
+                justifyContent: 'space-between', alignItems: 'center'
+            }}>
+                <div>
+                    <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>
+                        ⏯️ Autoplay al Navegar
+                    </div>
+                    <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
+                        Si está ACTIVO, la música de fondo (Idle) se pausará en cuanto oprimas cualquier tecla en la aplicación. Si está INACTIVO, la música de fondo continuará mientras estés navegando los menús.
+                    </div>
+                </div>
+                <button
+                    onClick={() => useRockolaStore.setState((s) => ({ idleStopOnNav: !s.idleStopOnNav }))}
+                    style={{
+                        padding: '8px 20px', background: idleStopOnNav ? 'var(--accent-red)' : 'var(--accent-green)',
+                        border: 'none', borderRadius: 8, color: 'white', fontWeight: 700, cursor: 'pointer',
+                        fontSize: 12, textTransform: 'uppercase', flexShrink: 0, marginLeft: 16
+                    }}
+                >
+                    {idleStopOnNav ? 'DESACTIVAR' : 'ACTIVAR'}
                 </button>
             </div>
 
@@ -445,17 +494,75 @@ export default function ConfigPage() {
                     🎬 Reproductor de Video
                 </div>
                 <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 16 }}>
-                    Configura el tamaño y posición del reproductor cuando hay un video activo.
+                    Configura el estilo de vista para videos locales y el reproductor minimizado inter-paneles.
                 </div>
 
                 <div style={{ marginBottom: 16 }}>
-                    <div style={labelStyle}>📐 Tamaño del Reproductor</div>
+                    <div style={labelStyle}>👁️ Estilo de Explorador (Videos Locales)</div>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                        {viewStyleOptions.map((opt) => (
+                            <button key={opt.value} onClick={() => setVideoViewStyle(opt.value)} style={optBtnStyle(videoViewStyle === opt.value)}>
+                                {opt.label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div style={{ marginBottom: 16 }}>
+                    <div style={labelStyle}>⏱️ Carga de Vista Previa (Segundo de Inicio)</div>
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                        {previewStartOptions.map((n) => (
+                            <button key={n} onClick={() => setVideoPreviewStart(n)} style={optBtnStyle(videoPreviewStart === n)}>
+                                {n}s
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div style={{ marginBottom: 16 }}>
+                    <div style={labelStyle}>⌛ Duración de Vista Previa Silenciada</div>
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                        {previewDurationOptions.map((n) => (
+                            <button key={n} onClick={() => setVideoPreviewDuration(n)} style={optBtnStyle(videoPreviewDuration === n)}>
+                                {n}s
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div style={{ marginBottom: 16 }}>
+                    <div style={labelStyle}>🐢 Retardo para Autoplay de Video (Navegación)</div>
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                        {previewDelayOptions.map((n) => (
+                            <button key={n} onClick={() => setVideoPreviewDelaySec(n)} style={optBtnStyle(videoPreviewDelaySec === n)}>
+                                {n}s
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div style={{ marginBottom: 16 }}>
+                    <div style={labelStyle}>📐 Tamaño del Reproductor (Video)</div>
                     <div style={{ display: 'flex', gap: 8 }}>
                         {sizeOptions.map((opt) => (
                             <button key={opt.value} onClick={() => setPlayerSize(opt.value)} style={optBtnStyle(playerSize === opt.value)}>
                                 {opt.label}
                             </button>
                         ))}
+                    </div>
+                </div>
+
+                <div style={{ marginBottom: 16 }}>
+                    <div style={labelStyle}>🎵 Canciones en Cola Visibles</div>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                        {queueDisplayOptions.map((n) => (
+                            <button key={n} onClick={() => setQueueDisplayCount(n)} style={optBtnStyle(queueDisplayCount === n)}>
+                                {n}
+                            </button>
+                        ))}
+                    </div>
+                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6 }}>
+                        Cuántas canciones se listarán bajo los controles del MiniPlayer
                     </div>
                 </div>
 
@@ -520,45 +627,46 @@ export default function ConfigPage() {
                         ))}
                     </div>
                 </div>
+                {/* ==================== Directories ==================== */}
+                <div style={sectionStyle}>
+                    <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 16 }}>
+                        📂 Carpetas de Música Local
+                    </div>
+                    <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 16 }}>
+                        Configura las rutas donde se encuentran tus archivos de música, videos y karaoke.
+                    </div>
+
+                    <div className="config-form-group">
+                        <label>🎵 Carpeta de Audio (MP3, WAV, FLAC)</label>
+                        <input type="text" value={audio} onChange={(e) => setAudio(e.target.value)}
+                            placeholder="C:\Users\edgar\OneDrive\Documentos\TRAE\rockola\music" />
+                    </div>
+
+                    <div className="config-form-group">
+                        <label>🎬 Carpeta de Videos (MP4, AVI, MKV)</label>
+                        <input type="text" value={video} onChange={(e) => setVideo(e.target.value)}
+                            placeholder="C:\Users\edgar\OneDrive\Documentos\TRAE\rockola\videos" />
+                    </div>
+
+                    <div className="config-form-group">
+                        <label>🎤 Carpeta de Karaoke</label>
+                        <input type="text" value={karaoke} onChange={(e) => setKaraoke(e.target.value)}
+                            placeholder="C:\Users\edgar\OneDrive\Documentos\TRAE\rockola\karaoke" />
+                    </div>
+
+                    <button className="config-save-btn" onClick={handleSave}>
+                        💾 Guardar Rutas
+                    </button>
+                </div>
+
+                {
+                    saved && (
+                        <div className="toast" style={{ background: 'var(--accent-green)' }}>
+                            ✅ Configuración guardada correctamente
+                        </div>
+                    )
+                }
             </div>
-
-            {/* ==================== Directories ==================== */}
-            <div style={sectionStyle}>
-                <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 16 }}>
-                    📂 Carpetas de Música Local
-                </div>
-                <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 16 }}>
-                    Configura las rutas donde se encuentran tus archivos de música, videos y karaoke.
-                </div>
-
-                <div className="config-form-group">
-                    <label>🎵 Carpeta de Audio (MP3, WAV, FLAC)</label>
-                    <input type="text" value={audio} onChange={(e) => setAudio(e.target.value)}
-                        placeholder="C:\Users\edgar\OneDrive\Documentos\TRAE\rockola\music" />
-                </div>
-
-                <div className="config-form-group">
-                    <label>🎬 Carpeta de Videos (MP4, AVI, MKV)</label>
-                    <input type="text" value={video} onChange={(e) => setVideo(e.target.value)}
-                        placeholder="C:\Users\edgar\OneDrive\Documentos\TRAE\rockola\videos" />
-                </div>
-
-                <div className="config-form-group">
-                    <label>🎤 Carpeta de Karaoke</label>
-                    <input type="text" value={karaoke} onChange={(e) => setKaraoke(e.target.value)}
-                        placeholder="C:\Users\edgar\OneDrive\Documentos\TRAE\rockola\karaoke" />
-                </div>
-
-                <button className="config-save-btn" onClick={handleSave}>
-                    💾 Guardar Rutas
-                </button>
-            </div>
-
-            {saved && (
-                <div className="toast" style={{ background: 'var(--accent-green)' }}>
-                    ✅ Configuración guardada correctamente
-                </div>
-            )}
         </div>
     );
 }
