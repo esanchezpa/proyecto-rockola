@@ -16,53 +16,46 @@ export default function NavTabs() {
     const adminMode = useRockolaStore((s) => s.adminMode);
     const focusZone = useRockolaStore((s) => s.focusZone);
     const setFocusZone = useRockolaStore((s) => s.setFocusZone);
+    const keyBindings = useRockolaStore((s) => s.keyBindings);
 
     const handleKeyDown = useCallback((e) => {
         if (focusZone !== 'nav') return;
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
         const currentIdx = TABS.findIndex((t) => t.id === activeTab);
+        const { up, down, left, right, select } = keyBindings;
 
-        switch (e.key) {
-            case 'ArrowRight': {
-                e.preventDefault();
-                e.stopPropagation();
-                const nextIdx = (currentIdx + 1) % TABS.length;
-                setActiveTab(TABS[nextIdx].id);
-                // Stay in nav zone
-                setFocusZone('nav');
-                break;
-            }
-            case 'ArrowLeft': {
-                e.preventDefault();
-                e.stopPropagation();
-                const prevIdx = (currentIdx - 1 + TABS.length) % TABS.length;
-                setActiveTab(TABS[prevIdx].id);
-                setFocusZone('nav');
-                break;
-            }
-            case 'ArrowDown': {
-                e.preventDefault();
-                e.stopPropagation();
-                // Switch focus to search if it exists, otherwise grid
-                if (['audio', 'video', 'youtube'].includes(activeTab)) {
-                    setFocusZone('search');
-                } else {
-                    setFocusZone('grid');
-                }
-                break;
-            }
-            case 'Enter': {
-                e.preventDefault();
-                e.stopPropagation();
-                // Switch focus to grid on the active tab
+        if (e.code === right || e.key === right) {
+            e.preventDefault();
+            e.stopPropagation();
+            const nextIdx = (currentIdx + 1) % TABS.length;
+            setActiveTab(TABS[nextIdx].id);
+            // Stay in nav zone
+            setFocusZone('nav');
+        } else if (e.code === left || e.key === left) {
+            e.preventDefault();
+            e.stopPropagation();
+            const prevIdx = (currentIdx - 1 + TABS.length) % TABS.length;
+            setActiveTab(TABS[prevIdx].id);
+            setFocusZone('nav');
+        } else if (e.code === down || e.key === down) {
+            e.preventDefault();
+            e.stopPropagation();
+            // Switch focus to search if it exists, otherwise grid
+            if (['audio', 'video', 'youtube'].includes(activeTab)) {
+                setFocusZone('search');
+            } else {
                 setFocusZone('grid');
-                break;
             }
-            default:
-                return;
+        } else if (e.code === select || e.key === select) {
+            e.preventDefault();
+            e.stopPropagation();
+            // Switch focus to grid on the active tab
+            setFocusZone('grid');
+        } else {
+            return;
         }
-    }, [focusZone, activeTab, setActiveTab, setFocusZone]);
+    }, [focusZone, activeTab, setActiveTab, setFocusZone, keyBindings]);
 
     useEffect(() => {
         window.addEventListener('keydown', handleKeyDown, true);

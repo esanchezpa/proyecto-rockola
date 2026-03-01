@@ -1,0 +1,42 @@
+# Plan para Mapeo Dinámico de Teclas (Key Mapping)
+
+## Backend (Node.js/Express)
+### [MODIFY] [settingsManager.js](file:///c:/Users/edgar/OneDrive/Documentos/ANTIGRAVITY/rockola/backend/src/config/settingsManager.js)
+- Añadir el objeto `keyBindings` a `defaultSettings` con la estructura:
+  ```json
+  {
+    "up": "ArrowUp",
+    "down": "ArrowDown",
+    "left": "ArrowLeft",
+    "right": "ArrowRight",
+    "select": "Enter",
+    "insert_coin": "i",
+    "cancel": "Escape"
+  }
+  ```
+### [MODIFY] [configController.js](file:///c:/Users/edgar/OneDrive/Documentos/ANTIGRAVITY/rockola/backend/src/controllers/configController.js)
+- En la función [updateConfig(req, res)](file:///c:/Users/edgar/OneDrive/Documentos/ANTIGRAVITY/rockola/backend/src/controllers/configController.js#12-21), recibir `keyBindings` desde `req.body` y enviarlo a [saveSettings](file:///c:/Users/edgar/OneDrive/Documentos/ANTIGRAVITY/rockola/backend/src/config/settingsManager.js#25-31) para fusionar con la config actual.
+
+## Frontend (React + Zustand)
+### [MODIFY] [useRockolaStore.js](file:///c:/Users/edgar/OneDrive/Documentos/ANTIGRAVITY/rockola/frontend/src/store/useRockolaStore.js)
+- Instanciar `keyBindings` dentro del estado con los deafults para prevenir nulos.
+- Añadir un action `setKeyBindings(bindings)` para modificar el Store.
+
+### [MODIFY] [useRockolaConfig.js](file:///c:/Users/edgar/OneDrive/Documentos/ANTIGRAVITY/rockola/frontend/src/hooks/useRockolaConfig.js)
+- En el `useEffect` de carga inicial ([getConfig()](file:///c:/Users/edgar/OneDrive/Documentos/ANTIGRAVITY/rockola/backend/src/controllers/configController.js#3-11)), enviar `cfg.keyBindings` hacia el `useRockolaStore`.
+- Modificar `saveConfig` para enviar `keyBindings` actualizado al backend.
+
+### [NEW] `useKeyManager.js`
+- Custom hook encargado del "event listener" global (`window.addEventListener('keydown')`).
+- Al ejecutarse una tecla, verificará:
+  1. Si coincide con `keyBindings.insert_coin`, llamar a [insertCoin()](file:///c:/Users/edgar/OneDrive/Documentos/ANTIGRAVITY/rockola/frontend/src/store/useRockolaStore.js#78-83) del store, con prevención de doble rebote (Debounce mediante `useRef` con 300ms de ventana muerta).
+  2. Otras teclas globales, si fuese necesario. Esta arquitectura preparará el camino para globalizar todas las acciones a futuro.
+
+### [MODIFY] [useGridNavigation.js](file:///c:/Users/edgar/OneDrive/Documentos/ANTIGRAVITY/rockola/frontend/src/hooks/useGridNavigation.js) & [MiniPlayer.jsx](file:///c:/Users/edgar/OneDrive/Documentos/ANTIGRAVITY/rockola/frontend/src/components/MiniPlayer.jsx)
+- Reemplazar las comprobaciones literales `"ArrowUp"`, `"ArrowDown"` por `keyBindings.up`, `keyBindings.down`, etc., sacadas por ref desde `useRockolaStore.getState().keyBindings` (o enganchadas reactivamente si es prop).
+
+### [MODIFY] [ConfigPage.jsx](file:///c:/Users/edgar/OneDrive/Documentos/ANTIGRAVITY/rockola/frontend/src/components/ConfigPage.jsx)
+- Añadir a la pestaña o una nueva sección de "Controles / Joystick".
+- Renderear una lista con las 7 acciones `[Arriba, Abajo, Izquierda, Derecha, Seleccionar, Moneda, Cancelar]`.
+- Estado visual interactivo: al presionar "Asignar", el componente escucha una única vez `window.addEventListener('keydown')` para capturar `e.code` y reemplazar el input visualmente.
+- Botón "Guardar Mapeo de Teclas" para disparar Axios hacia el Server.

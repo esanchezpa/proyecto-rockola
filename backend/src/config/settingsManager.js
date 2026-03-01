@@ -8,6 +8,15 @@ const defaultSettings = {
   audioPath: path.join(os.homedir(), 'Music', 'Rockola', 'audio'),
   videoPath: path.join(os.homedir(), 'Music', 'Rockola', 'video'),
   karaokePath: path.join(os.homedir(), 'Music', 'Rockola', 'karaoke'),
+  keyBindings: {
+    up: 'ArrowUp',
+    down: 'ArrowDown',
+    left: 'ArrowLeft',
+    right: 'ArrowRight',
+    select: 'Enter',
+    insert_coin: 'i',
+    cancel: 'Escape'
+  }
 };
 
 function ensureSettingsFile() {

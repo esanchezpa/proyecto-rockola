@@ -39,7 +39,7 @@ const coverSizeOptions = [
 ];
 
 export default function ConfigPage() {
-    const { directories, saveConfig } = useRockolaConfig();
+    const { directories, keyBindings, saveConfig } = useRockolaConfig();
     const adminMode = useRockolaStore((s) => s.adminMode);
     const toggleAdminMode = useRockolaStore((s) => s.toggleAdminMode);
     const playerSize = useRockolaStore((s) => s.playerSize);
@@ -91,14 +91,36 @@ export default function ConfigPage() {
     const [adminPassword, setAdminPassword] = useState('');
     const [showPasswordInput, setShowPasswordInput] = useState(false);
 
+    // Key Mapping state
+    const [tempKeyBindings, setTempKeyBindings] = useState(keyBindings);
+    const [activeAssign, setActiveAssign] = useState(null); // 'up', 'down', etc.
+
     useEffect(() => {
         setAudio(directories.audio);
         setVideo(directories.video);
         setKaraoke(directories.karaoke);
     }, [directories]);
 
+    useEffect(() => {
+        setTempKeyBindings(keyBindings);
+    }, [keyBindings]);
+
+    useEffect(() => {
+        if (!activeAssign) return;
+
+        const handleCaptureKey = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setTempKeyBindings(prev => ({ ...prev, [activeAssign]: e.code || e.key }));
+            setActiveAssign(null);
+        };
+
+        window.addEventListener('keydown', handleCaptureKey, { once: true });
+        return () => window.removeEventListener('keydown', handleCaptureKey);
+    }, [activeAssign]);
+
     const handleSave = async () => {
-        const ok = await saveConfig({ audio, video, karaoke });
+        const ok = await saveConfig({ audio, video, karaoke }, tempKeyBindings);
         if (ok) {
             setSaved(true);
             setTimeout(() => setSaved(false), 3000);
@@ -627,46 +649,117 @@ export default function ConfigPage() {
                         ))}
                     </div>
                 </div>
-                {/* ==================== Directories ==================== */}
-                <div style={sectionStyle}>
-                    <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 16 }}>
-                        📂 Carpetas de Música Local
-                    </div>
-                    <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 16 }}>
-                        Configura las rutas donde se encuentran tus archivos de música, videos y karaoke.
-                    </div>
+            </div>
 
-                    <div className="config-form-group">
-                        <label>🎵 Carpeta de Audio (MP3, WAV, FLAC)</label>
-                        <input type="text" value={audio} onChange={(e) => setAudio(e.target.value)}
-                            placeholder="C:\Users\edgar\OneDrive\Documentos\TRAE\rockola\music" />
-                    </div>
-
-                    <div className="config-form-group">
-                        <label>🎬 Carpeta de Videos (MP4, AVI, MKV)</label>
-                        <input type="text" value={video} onChange={(e) => setVideo(e.target.value)}
-                            placeholder="C:\Users\edgar\OneDrive\Documentos\TRAE\rockola\videos" />
-                    </div>
-
-                    <div className="config-form-group">
-                        <label>🎤 Carpeta de Karaoke</label>
-                        <input type="text" value={karaoke} onChange={(e) => setKaraoke(e.target.value)}
-                            placeholder="C:\Users\edgar\OneDrive\Documentos\TRAE\rockola\karaoke" />
-                    </div>
-
-                    <button className="config-save-btn" onClick={handleSave}>
-                        💾 Guardar Rutas
-                    </button>
+            {/* ==================== Key Mapping ==================== */}
+            <div style={sectionStyle}>
+                <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>
+                    🎮 Controles / Joystick
+                </div>
+                <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 16 }}>
+                    Configura las teclas para navegar y controlar la Rockola. Haz clic en "Asignar" y presiona la tecla deseada.
                 </div>
 
-                {
-                    saved && (
-                        <div className="toast" style={{ background: 'var(--accent-green)' }}>
-                            ✅ Configuración guardada correctamente
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16 }}>
+                    {[
+                        { key: 'up', label: 'Arriba' },
+                        { key: 'down', label: 'Abajo' },
+                        { key: 'left', label: 'Izquierda' },
+                        { key: 'right', label: 'Derecha' },
+                        { key: 'select', label: 'Seleccionar' },
+                        { key: 'insert_coin', label: 'Insertar Moneda' },
+                        { key: 'cancel', label: 'Cancelar' },
+                    ].map((item) => (
+                        <div key={item.key} style={{
+                            background: 'rgba(255,255,255,0.03)',
+                            padding: 12,
+                            borderRadius: 8,
+                            border: '1px solid var(--border-color)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 8
+                        }}>
+                            <div style={labelStyle}>{item.label}</div>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <span style={{
+                                    fontFamily: 'monospace',
+                                    background: 'var(--bg-secondary)',
+                                    padding: '4px 8px',
+                                    borderRadius: 4,
+                                    fontSize: 14,
+                                    color: activeAssign === item.key ? 'var(--accent-yellow)' : 'var(--accent-blue)'
+                                }}>
+                                    {activeAssign === item.key ? 'Presiona una tecla...' : tempKeyBindings[item.key]}
+                                </span>
+                                <button
+                                    onClick={() => setActiveAssign(item.key)}
+                                    disabled={activeAssign !== null}
+                                    style={{
+                                        padding: '4px 10px',
+                                        background: activeAssign === item.key ? 'var(--accent-yellow)' : 'rgba(255,255,255,0.1)',
+                                        border: 'none',
+                                        borderRadius: 4,
+                                        color: activeAssign === item.key ? '#000' : '#fff',
+                                        fontSize: 11,
+                                        cursor: 'pointer',
+                                        fontWeight: 700
+                                    }}
+                                >
+                                    {activeAssign === item.key ? 'Capturando' : 'Asignar'}
+                                </button>
+                            </div>
                         </div>
-                    )
-                }
+                    ))}
+                </div>
+
+                <button
+                    className="config-save-btn"
+                    onClick={handleSave}
+                    style={{ marginTop: 24, width: 'auto', padding: '12px 30px' }}
+                >
+                    💾 Guardar Mapeo de Teclas
+                </button>
             </div>
+
+            {/* ==================== Directories ==================== */}
+            <div style={sectionStyle}>
+                <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 16 }}>
+                    📂 Carpetas de Música Local
+                </div>
+                <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 16 }}>
+                    Configura las rutas donde se encuentran tus archivos de música, videos y karaoke.
+                </div>
+
+                <div className="config-form-group">
+                    <label>🎵 Carpeta de Audio (MP3, WAV, FLAC)</label>
+                    <input type="text" value={audio} onChange={(e) => setAudio(e.target.value)}
+                        placeholder="C:\Users\edgar\OneDrive\Documentos\TRAE\rockola\music" />
+                </div>
+
+                <div className="config-form-group">
+                    <label>🎬 Carpeta de Videos (MP4, AVI, MKV)</label>
+                    <input type="text" value={video} onChange={(e) => setVideo(e.target.value)}
+                        placeholder="C:\Users\edgar\OneDrive\Documentos\TRAE\rockola\videos" />
+                </div>
+
+                <div className="config-form-group">
+                    <label>🎤 Carpeta de Karaoke</label>
+                    <input type="text" value={karaoke} onChange={(e) => setKaraoke(e.target.value)}
+                        placeholder="C:\Users\edgar\OneDrive\Documentos\TRAE\rockola\karaoke" />
+                </div>
+
+                <button className="config-save-btn" onClick={handleSave}>
+                    💾 Guardar Rutas
+                </button>
+            </div>
+
+            {
+                saved && (
+                    <div className="toast" style={{ background: 'var(--accent-green)' }}>
+                        ✅ Configuración guardada correctamente
+                    </div>
+                )
+            }
         </div>
     );
 }

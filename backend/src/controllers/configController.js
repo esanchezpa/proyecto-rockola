@@ -11,8 +11,8 @@ function getConfig(req, res) {
 
 function updateConfig(req, res) {
     try {
-        const { audioPath, videoPath, karaokePath } = req.body;
-        const updated = saveSettings({ audioPath, videoPath, karaokePath });
+        const { audioPath, videoPath, karaokePath, keyBindings } = req.body;
+        const updated = saveSettings({ audioPath, videoPath, karaokePath, keyBindings });
         res.json({ message: 'Configuración actualizada', config: updated });
     } catch (err) {
         res.status(500).json({ error: 'Error al guardar configuración', details: err.message });

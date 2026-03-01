@@ -15,6 +15,7 @@ export function useGridNavigation(totalItems, columns = 4, onSelect, itemsPerPag
     const setSelectedIndex = useRockolaStore((s) => s.setSelectedIndex);
     const focusZone = useRockolaStore((s) => s.focusZone);
     const setFocusZone = useRockolaStore((s) => s.setFocusZone);
+    const keyBindings = useRockolaStore((s) => s.keyBindings);
 
     const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
 
@@ -44,134 +45,127 @@ export function useGridNavigation(totalItems, columns = 4, onSelect, itemsPerPag
         let newIndex = selectedIndex;
         let newPage = page;
 
-        switch (e.key) {
-            case 'ArrowRight': {
-                e.preventDefault();
-                e.stopPropagation();
-                if (layout === 'horizontal') {
-                    if (selectedIndex + columns < pageItemCount) {
-                        newIndex = selectedIndex + columns;
-                    } else {
-                        setFocusZone('player');
-                    }
+        const { up, down, left, right, select } = keyBindings;
+
+        if (e.code === right || e.key === right) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (layout === 'horizontal') {
+                if (selectedIndex + columns < pageItemCount) {
+                    newIndex = selectedIndex + columns;
                 } else {
-                    const col = selectedIndex % columns;
-                    if (columns === 1 || col === columns - 1 || selectedIndex === pageItemCount - 1) {
-                        setFocusZone('player');
+                    setFocusZone('player');
+                }
+            } else {
+                const col = selectedIndex % columns;
+                if (columns === 1 || col === columns - 1 || selectedIndex === pageItemCount - 1) {
+                    setFocusZone('player');
+                    return;
+                }
+                if (selectedIndex + 1 < pageItemCount) {
+                    newIndex = selectedIndex + 1;
+                }
+            }
+        } else if (e.code === left || e.key === left) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (layout === 'horizontal') {
+                if (selectedIndex - columns >= 0) {
+                    newIndex = selectedIndex - columns;
+                } else {
+                    const state = useRockolaStore.getState();
+                    if (state.selectedArtist) {
+                        useRockolaStore.setState({ selectedArtist: '', viewMode: 'artists', focusZone: 'grid' });
+                        return;
+                    } else if (state.selectedGenre) {
+                        useRockolaStore.setState({ selectedGenre: '', activeTab: 'genero', focusZone: 'grid' });
                         return;
                     }
-                    if (selectedIndex + 1 < pageItemCount) {
-                        newIndex = selectedIndex + 1;
-                    }
                 }
-                break;
-            }
-            case 'ArrowLeft': {
-                e.preventDefault();
-                e.stopPropagation();
-                if (layout === 'horizontal') {
-                    if (selectedIndex - columns >= 0) {
-                        newIndex = selectedIndex - columns;
-                    } else {
-                        const state = useRockolaStore.getState();
-                        if (state.selectedArtist) {
-                            useRockolaStore.setState({ selectedArtist: '', viewMode: 'artists', focusZone: 'grid' });
-                            return;
-                        } else if (state.selectedGenre) {
-                            useRockolaStore.setState({ selectedGenre: '', activeTab: 'genero', focusZone: 'grid' });
-                            return;
-                        }
+            } else {
+                const col = selectedIndex % columns;
+                if (col === 0) {
+                    const state = useRockolaStore.getState();
+                    if (state.selectedArtist) {
+                        // Estaba viendo canciones de un artista y regresa a la vista de artistas
+                        useRockolaStore.setState({ selectedArtist: '', viewMode: 'artists', focusZone: 'grid' });
+                        return;
+                    } else if (state.selectedGenre) {
+                        // Estaba viendo la lista general de canciones de un género o los artistas
+                        useRockolaStore.setState({ selectedGenre: '', activeTab: 'genero', focusZone: 'grid' });
+                        return;
                     }
+                } else if (selectedIndex > 0) {
+                    newIndex = selectedIndex - 1;
+                }
+            }
+        } else if (e.code === down || e.key === down) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (layout === 'horizontal') {
+                if (selectedIndex % columns < columns - 1 && selectedIndex + 1 < pageItemCount) {
+                    newIndex = selectedIndex + 1;
+                }
+            } else {
+                const nextRow = selectedIndex + columns;
+                if (nextRow < pageItemCount) {
+                    newIndex = nextRow;
+                } else if (page < totalPages - 1) {
+                    newPage = page + 1;
+                    newIndex = selectedIndex % columns;
+                    const maxIndex = (totalItems - newPage * itemsPerPage) - 1;
+                    if (newIndex > maxIndex) newIndex = maxIndex;
+                }
+            }
+        } else if (e.code === up || e.key === up) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (layout === 'horizontal') {
+                if (selectedIndex % columns > 0) {
+                    newIndex = selectedIndex - 1;
                 } else {
+                    setFocusZone('nav');
+                }
+            } else {
+                const prevRow = selectedIndex - columns;
+                if (prevRow >= 0) {
+                    newIndex = prevRow;
+                } else if (page > 0) {
+                    newPage = page - 1;
+                    const prevPageItems = itemsPerPage;
                     const col = selectedIndex % columns;
-                    if (col === 0) {
-                        const state = useRockolaStore.getState();
-                        if (state.selectedArtist) {
-                            // Estaba viendo canciones de un artista y regresa a la vista de artistas
-                            useRockolaStore.setState({ selectedArtist: '', viewMode: 'artists', focusZone: 'grid' });
-                            return;
-                        } else if (state.selectedGenre) {
-                            // Estaba viendo la lista general de canciones de un género o los artistas
-                            useRockolaStore.setState({ selectedGenre: '', activeTab: 'genero', focusZone: 'grid' });
-                            return;
-                        }
-                    } else if (selectedIndex > 0) {
-                        newIndex = selectedIndex - 1;
-                    }
-                }
-                break;
-            }
-            case 'ArrowDown': {
-                e.preventDefault();
-                e.stopPropagation();
-                if (layout === 'horizontal') {
-                    if (selectedIndex % columns < columns - 1 && selectedIndex + 1 < pageItemCount) {
-                        newIndex = selectedIndex + 1;
-                    }
+                    const lastRowStart = Math.floor((prevPageItems - 1) / columns) * columns;
+                    newIndex = Math.min(lastRowStart + col, prevPageItems - 1);
                 } else {
-                    const nextRow = selectedIndex + columns;
-                    if (nextRow < pageItemCount) {
-                        newIndex = nextRow;
-                    } else if (page < totalPages - 1) {
-                        newPage = page + 1;
-                        newIndex = selectedIndex % columns;
-                        const maxIndex = (totalItems - newPage * itemsPerPage) - 1;
-                        if (newIndex > maxIndex) newIndex = maxIndex;
+                    const state = useRockolaStore.getState();
+                    const { activeTab, selectedGenre, selectedArtist } = state;
+
+                    if (['audio', 'video'].includes(activeTab) && selectedGenre && !selectedArtist) {
+                        setFocusZone('viewToggles');
+                        return;
                     }
-                }
-                break;
-            }
-            case 'ArrowUp': {
-                e.preventDefault();
-                e.stopPropagation();
-                if (layout === 'horizontal') {
-                    if (selectedIndex % columns > 0) {
-                        newIndex = selectedIndex - 1;
+
+                    if (['audio', 'video', 'youtube'].includes(activeTab)) {
+                        setFocusZone('search');
+                        setTimeout(() => {
+                            const input = document.querySelector('input[type="text"]');
+                            if (input) input.focus();
+                        }, 50);
                     } else {
                         setFocusZone('nav');
                     }
-                } else {
-                    const prevRow = selectedIndex - columns;
-                    if (prevRow >= 0) {
-                        newIndex = prevRow;
-                    } else if (page > 0) {
-                        newPage = page - 1;
-                        const prevPageItems = itemsPerPage;
-                        const col = selectedIndex % columns;
-                        const lastRowStart = Math.floor((prevPageItems - 1) / columns) * columns;
-                        newIndex = Math.min(lastRowStart + col, prevPageItems - 1);
-                    } else {
-                        const state = useRockolaStore.getState();
-                        const { activeTab, selectedGenre, selectedArtist } = state;
-
-                        if (['audio', 'video'].includes(activeTab) && selectedGenre && !selectedArtist) {
-                            setFocusZone('viewToggles');
-                            return;
-                        }
-
-                        if (['audio', 'video', 'youtube'].includes(activeTab)) {
-                            setFocusZone('search');
-                            setTimeout(() => {
-                                const input = document.querySelector('input[type="text"]');
-                                if (input) input.focus();
-                            }, 50);
-                        } else {
-                            setFocusZone('nav');
-                        }
-                        return;
-                    }
+                    return;
                 }
-                break;
             }
-            case 'Enter':
-                e.preventDefault();
-                e.stopPropagation();
-                if (onSelect && selectedIndex < pageItemCount) {
-                    onSelect(pageStart + selectedIndex);
-                }
-                return;
-            default:
-                return;
+        } else if (e.code === select || e.key === select) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (onSelect && selectedIndex < pageItemCount) {
+                onSelect(pageStart + selectedIndex);
+            }
+            return;
+        } else {
+            return;
         }
 
         if (newPage !== page) {
@@ -183,7 +177,7 @@ export function useGridNavigation(totalItems, columns = 4, onSelect, itemsPerPag
         if (newIndex !== selectedIndex) {
             setSelectedIndex(newIndex);
         }
-    }, [selectedIndex, setSelectedIndex, pageItemCount, columns, onSelect, page, totalPages, pageStart, totalItems, itemsPerPage, focusZone, setFocusZone, layout]);
+    }, [selectedIndex, setSelectedIndex, pageItemCount, columns, onSelect, page, totalPages, pageStart, totalItems, itemsPerPage, focusZone, setFocusZone, layout, keyBindings]);
 
     useEffect(() => {
         window.addEventListener('keydown', handleKeyDown, true);

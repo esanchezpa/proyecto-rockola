@@ -25,6 +25,7 @@ export default function MiniPlayer() {
     const togglePlay = useRockolaStore((s) => s.togglePlay);
     const nextTrack = useRockolaStore((s) => s.nextTrack);
     const focusZone = useRockolaStore((s) => s.focusZone);
+    const keyBindings = useRockolaStore((s) => s.keyBindings);
     const playerSize = useRockolaStore((s) => s.playerSize);
     const playerPosition = useRockolaStore((s) => s.playerPosition);
     const consumeYtTime = useRockolaStore((s) => s.consumeYtTime);
@@ -50,51 +51,44 @@ export default function MiniPlayer() {
         const handleKeyDown = (e) => {
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
-            switch (e.key) {
-                case 'ArrowRight': {
-                    if (currentTrack) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setSelectedControl((prev) => Math.min(prev + 1, CONTROLS_COUNT - 1));
-                    }
-                    break;
-                }
-                case 'ArrowLeft': {
-                    if (currentTrack) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (selectedControl === 0) {
-                            useRockolaStore.getState().setFocusZone('grid');
-                        } else {
-                            setSelectedControl((prev) => Math.max(prev - 1, 0));
-                        }
-                    }
-                    break;
-                }
-                case 'ArrowUp': {
+            const { up, down, left, right, select } = keyBindings;
+
+            if (e.code === right || e.key === right) {
+                if (currentTrack) {
                     e.preventDefault();
                     e.stopPropagation();
-                    // Return to grid
-                    useRockolaStore.getState().setFocusZone('grid');
-                    break;
+                    setSelectedControl((prev) => Math.min(prev + 1, CONTROLS_COUNT - 1));
                 }
-                case 'Enter': {
-                    if (currentTrack) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (selectedControl === 0) togglePlay();
-                        else if (selectedControl === 1) handleNextTrack();
+            } else if (e.code === left || e.key === left) {
+                if (currentTrack) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (selectedControl === 0) {
+                        useRockolaStore.getState().setFocusZone('grid');
+                    } else {
+                        setSelectedControl((prev) => Math.max(prev - 1, 0));
                     }
-                    break;
                 }
-                default:
-                    return;
+            } else if (e.code === up || e.key === up) {
+                e.preventDefault();
+                e.stopPropagation();
+                // Return to grid
+                useRockolaStore.getState().setFocusZone('grid');
+            } else if (e.code === select || e.key === select) {
+                if (currentTrack) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (selectedControl === 0) togglePlay();
+                    else if (selectedControl === 1) handleNextTrack();
+                }
+            } else {
+                return;
             }
         };
 
         window.addEventListener('keydown', handleKeyDown, true);
         return () => window.removeEventListener('keydown', handleKeyDown, true);
-    }, [focusZone, currentTrack, selectedControl, togglePlay, nextTrack]);
+    }, [focusZone, currentTrack, selectedControl, togglePlay, nextTrack, keyBindings]);
 
     // Plan de implementación actualizado:
     // - **Nueva Sección de Cola**: Incrustar una lista detallada de las próximas canciones directamente debajo de los controles del MiniPlayer, eliminando el popup flotante.

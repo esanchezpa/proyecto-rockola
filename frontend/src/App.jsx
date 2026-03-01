@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import useRockolaStore from './store/useRockolaStore';
+import useKeyManager from './hooks/useKeyManager';
 import Layout from './components/Layout';
 import AudioPage from './components/AudioPage';
 import VideoPage from './components/VideoPage';
@@ -11,6 +12,7 @@ import { searchYouTube } from './api/rockolaApi';
 import './index.css';
 
 export default function App() {
+  useKeyManager(); // Global key event listener
   const activeTab = useRockolaStore((s) => s.activeTab);
   const ytLoaded = useRockolaStore((s) => s.ytLoaded);
   const setYtData = useRockolaStore((s) => s.setYtData);

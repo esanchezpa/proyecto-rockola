@@ -34,6 +34,17 @@ const useRockolaStore = create(
             idleActive: false,          // whether idle mode is currently running
             idleStopOnNav: false,       // Stop autoplay when a user navigates between menus
 
+            // Key mapping
+            keyBindings: {
+                up: 'ArrowUp',
+                down: 'ArrowDown',
+                left: 'ArrowLeft',
+                right: 'ArrowRight',
+                select: 'Enter',
+                insert_coin: 'i',
+                cancel: 'Escape'
+            },
+
             // Configuration
             directories: {
                 audio: '',
@@ -226,12 +237,14 @@ const useRockolaStore = create(
 
             // Actions — Config
             setDirectories: (dirs) => set({ directories: dirs }),
+            setKeyBindings: (bindings) => set({ keyBindings: bindings }),
         }),
         {
             name: 'rockola-config',
             partialize: (state) => ({
                 adminMode: state.adminMode,
                 directories: state.directories,
+                keyBindings: state.keyBindings,
                 playerSize: state.playerSize,
                 playerPosition: state.playerPosition,
                 audioCoverSize: state.audioCoverSize,

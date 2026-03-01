@@ -32,6 +32,23 @@ function streamMedia(req, res) {
             return res.status(400).json({ error: 'Se requiere el parámetro path' });
         }
 
+        // --- Seguridad: Validar que el archivo esté dentro de los directorios permitidos ---
+        const settings = getSettings();
+        const allowedPaths = [
+            settings.audioPath,
+            settings.videoPath,
+            settings.karaokePath
+        ].filter(Boolean).map(p => path.resolve(p));
+
+        const absolutePath = path.resolve(filePath);
+        const isAllowed = allowedPaths.some(allowed => absolutePath.startsWith(allowed));
+
+        if (!isAllowed) {
+            console.warn(`Intento de acceso no autorizado a: ${filePath}`);
+            return res.status(403).json({ error: 'Acceso no autorizado a este archivo' });
+        }
+        // ---------------------------------------------------------------------------------
+
         if (!fs.existsSync(filePath)) {
             return res.status(404).json({ error: 'Archivo no encontrado' });
         }
