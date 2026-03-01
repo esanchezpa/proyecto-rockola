@@ -87,9 +87,11 @@ export function useGridNavigation(totalItems, columns = 4, onSelect, itemsPerPag
                     if (col === 0) {
                         const state = useRockolaStore.getState();
                         if (state.selectedArtist) {
+                            // Estaba viendo canciones de un artista y regresa a la vista de artistas
                             useRockolaStore.setState({ selectedArtist: '', viewMode: 'artists', focusZone: 'grid' });
                             return;
                         } else if (state.selectedGenre) {
+                            // Estaba viendo la lista general de canciones de un género o los artistas
                             useRockolaStore.setState({ selectedGenre: '', activeTab: 'genero', focusZone: 'grid' });
                             return;
                         }

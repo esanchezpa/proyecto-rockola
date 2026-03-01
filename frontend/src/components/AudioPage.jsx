@@ -24,6 +24,7 @@ export default function AudioPage() {
     // Search states
     const [searchTerm, setSearchTerm] = useState('');
     const [debouncedTerm, setDebouncedTerm] = useState('');
+    const [displayCount, setDisplayCount] = useState(50);
     const searchInputRef = useRef(null);
     const focusZone = useRockolaStore((s) => s.focusZone);
     const setFocusZone = useRockolaStore((s) => s.setFocusZone);
@@ -37,6 +38,7 @@ export default function AudioPage() {
     useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedTerm(searchTerm);
+            setDisplayCount(50); // resetear vista lista
         }, 350);
         return () => clearTimeout(timer);
     }, [searchTerm]);
@@ -53,8 +55,11 @@ export default function AudioPage() {
     // Fetch Songs
     useEffect(() => {
         if (viewMode === 'list') {
-            searchLocalMedia(debouncedTerm, 'audio', 5000, selectedGenre, selectedArtist)
-                .then((data) => setSongs(data))
+            searchLocalMedia(debouncedTerm, 'audio', 10000, selectedGenre, selectedArtist)
+                .then((data) => {
+                    setSongs(data);
+                    setDisplayCount(50);
+                })
                 .catch(() => setSongs([]));
         }
     }, [debouncedTerm, selectedGenre, selectedArtist, viewMode]);
@@ -140,21 +145,26 @@ export default function AudioPage() {
 
     // Navigation logic
     const listLength = viewMode === 'list' ? songs.length : artists.length;
-    const itemsPerPage = viewMode === 'list' ? 5000 : 12;
+    const itemsPerPage = viewMode === 'list' ? 10000 : 12; // Dejar la página ilimitada, se maneja el slice visualmente
     const numColumns = viewMode === 'list' ? 1 : 4;
 
     const { selectedIndex, page, totalPages, setPage, pageStart, pageEnd } =
         useGridNavigation(listLength, numColumns, handleSelect, itemsPerPage);
 
-    // Auto-scroll to selected item
+    // Auto-scroll to selected item & lazy loading
     useEffect(() => {
         if (focusZone === 'grid') {
+            // Lazy load more items if approaching the bottom of currently displayed list
+            if (viewMode === 'list' && selectedIndex >= displayCount - 5) {
+                setDisplayCount(prev => Math.min(prev + 50, songs.length));
+            }
+
             const selectedEl = document.querySelector('.audio-list-item.selected');
             if (selectedEl) {
                 selectedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
         }
-    }, [selectedIndex, page, focusZone]);
+    }, [selectedIndex, page, focusZone, viewMode, displayCount, songs.length]);
 
     const getThumbnail = (file) => {
         if (!file) return GENERIC_MUSIC_ICON;
@@ -164,7 +174,7 @@ export default function AudioPage() {
             || GENERIC_MUSIC_ICON;
     };
 
-    const pageSongs = songs.slice(pageStart, pageEnd);
+    const pageSongs = viewMode === 'list' ? songs.slice(0, displayCount) : songs.slice(pageStart, pageEnd);
     const pageArtists = artists.slice(pageStart, pageEnd);
 
     return (
@@ -326,7 +336,7 @@ export default function AudioPage() {
                                 return (
                                     <div
                                         key={file.id}
-                                        className={`audio-list-item ${isSelected ? 'selected' : ''}`}
+                                        className={`audio-list-item ${isSelected && focusZone === 'grid' ? 'selected' : ''}`}
                                         onClick={() => handleSelect(globalIdx)}
                                         style={{ display: 'flex', alignItems: 'center' }}
                                     >

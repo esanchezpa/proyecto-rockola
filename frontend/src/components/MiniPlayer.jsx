@@ -63,7 +63,11 @@ export default function MiniPlayer() {
                     if (currentTrack) {
                         e.preventDefault();
                         e.stopPropagation();
-                        setSelectedControl((prev) => Math.max(prev - 1, 0));
+                        if (selectedControl === 0) {
+                            useRockolaStore.getState().setFocusZone('grid');
+                        } else {
+                            setSelectedControl((prev) => Math.max(prev - 1, 0));
+                        }
                     }
                     break;
                 }

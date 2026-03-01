@@ -30,6 +30,7 @@ export default function VideoPage() {
     // Search states
     const [searchTerm, setSearchTerm] = useState('');
     const [debouncedTerm, setDebouncedTerm] = useState('');
+    const [displayCount, setDisplayCount] = useState(50);
     const searchInputRef = React.useRef(null);
     const focusZone = useRockolaStore((s) => s.focusZone);
     const setFocusZone = useRockolaStore((s) => s.setFocusZone);
@@ -45,6 +46,7 @@ export default function VideoPage() {
     useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedTerm(searchTerm);
+            setDisplayCount(50); // reset view list amount
         }, 350);
         return () => clearTimeout(timer);
     }, [searchTerm]);
@@ -59,7 +61,7 @@ export default function VideoPage() {
     }, [focusZone]);
 
     useEffect(() => {
-        searchLocalMedia(debouncedTerm, 'video', 5000)
+        searchLocalMedia(debouncedTerm, 'video', 10000)
             .then((data) => setVideos(data))
             .catch(() => setVideos([]));
     }, [debouncedTerm]);
@@ -85,7 +87,7 @@ export default function VideoPage() {
     }, [videos, addToQueue]);
 
     const { selectedIndex, page, totalPages, setPage, pageStart, pageEnd } =
-        useGridNavigation(videos.length, isList ? 1 : 4, handleSelect, isList ? 5000 : 12);
+        useGridNavigation(videos.length, isList ? 1 : 4, handleSelect, isList ? 10000 : 12);
 
     const selectedGlobalTrack = videos[pageStart + selectedIndex] || null;
 
@@ -131,18 +133,23 @@ export default function VideoPage() {
 
     // --- FIN LOGICA VISTA PREVIA ---
 
-    // Auto-scroll to selected item
+    // Auto-scroll    // Auto-scroll
     useEffect(() => {
         if (focusZone === 'grid') {
+            // Lazy load more items if approaching the bottom of currently displayed list
+            if (isList && selectedIndex >= displayCount - 5) {
+                setDisplayCount(prev => Math.min(prev + 50, videos.length));
+            }
+
             const selector = isList ? '.audio-list-item.selected' : '.media-card.selected';
             const selectedEl = document.querySelector(selector);
             if (selectedEl) {
                 selectedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
         }
-    }, [selectedIndex, page, focusZone, isList]);
+    }, [selectedIndex, focusZone, isList, displayCount, videos.length]);
 
-    const pageVideos = videos.slice(pageStart, pageEnd);
+    const pageVideos = isList ? videos.slice(0, displayCount) : videos.slice(pageStart, pageEnd);
 
     return (
         <div>
@@ -211,7 +218,7 @@ export default function VideoPage() {
                             return (
                                 <div
                                     key={file.id}
-                                    className={`audio-list-item ${isSelected ? 'selected' : ''}`}
+                                    className={`audio-list-item ${isSelected && focusZone === 'grid' ? 'selected' : ''}`}
                                     onClick={() => handleSelect(globalIdx)}
                                 >
                                     <div className="audio-list-info">
