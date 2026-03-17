@@ -20,12 +20,16 @@ export default function IdleAutoplay() {
 
     const isPlaying = useRockolaStore((s) => s.isPlaying);
     const credits = useRockolaStore((s) => s.credits);
+    const idleVolume = useRockolaStore((s) => s.idleVolume);
+    const setIdleVolume = useRockolaStore((s) => s.setIdleVolume);
+    const setIsFadingOut = useRockolaStore((s) => s.setIsFadingOut);
 
     const idleTimerRef = useRef(null);
     const previewTimerRef = useRef(null);
     const isIdleRef = useRef(false);
     const cachedAudio = useRef(null);
     const cachedVideo = useRef(null);
+    const fadeIntervalRef = useRef(null);
 
     const pickRandom = (arr) => arr.length > 0 ? arr[Math.floor(Math.random() * arr.length)] : null;
 
@@ -303,13 +307,39 @@ export default function IdleAutoplay() {
             return;
         }
 
+        // Fase 2: Fade Out Handler
+        const handleFadeOut = () => {
+            if (!isIdleRef.current) return;
+            
+            console.log('[IdleAutoplay] Starting Fade Out...');
+            setIsFadingOut(true);
+            setIdleVolume(1.0);
+            
+            clearInterval(fadeIntervalRef.current);
+            fadeIntervalRef.current = setInterval(() => {
+                const currentVol = useRockolaStore.getState().idleVolume;
+                if (currentVol <= 0) {
+                    clearInterval(fadeIntervalRef.current);
+                    setIdleVolume(0);
+                    stopIdleMode();
+                    setIsFadingOut(false);
+                    setIdleVolume(1.0); // Reset for next time
+                } else {
+                    setIdleVolume(currentVol - 0.1);
+                }
+            }, 100); // 100ms * 10 steps = 1 second fade
+        };
+
+        // Listen for coin insert events
+        window.addEventListener('TRIGGER_IDLE_FADEOUT', handleFadeOut);
+
         const handleUserActivity = (e) => {
             const store = useRockolaStore.getState();
+            
+            // Fase 2: Also trigger fade out on any key press if idle is playing
             if (store.idleStopOnNav && isIdleRef.current) {
-                // If setting "idleStopOnNav" is enabled and we are in idle state, pressing keys will instantly silence idle.
-                stopIdleMode();
+                handleFadeOut();
             } else {
-                // Otherwise (by default), pressing keys while idle simply allows them to navigate while background music continues.
                 scheduleIdleTimer();
             }
         };
@@ -322,12 +352,14 @@ export default function IdleAutoplay() {
         scheduleIdleTimer();
 
         return () => {
+            window.removeEventListener('TRIGGER_IDLE_FADEOUT', handleFadeOut);
             events.forEach((e) => window.removeEventListener(e, handleUserActivity, { capture: true }));
             clearTimeout(idleTimerRef.current);
             clearTimeout(previewTimerRef.current);
+            clearInterval(fadeIntervalRef.current);
             isIdleRef.current = false;
         };
-    }, [idleEnabled, scheduleIdleTimer, stopIdleMode]);
+    }, [idleEnabled, scheduleIdleTimer, stopIdleMode, setIdleVolume, setIsFadingOut]);
 
     return null;
 }

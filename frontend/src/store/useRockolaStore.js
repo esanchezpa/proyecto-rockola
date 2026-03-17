@@ -18,6 +18,8 @@ const useRockolaStore = create(
             queue: [],
             currentTrack: null,
             isPlaying: false,
+            idleVolume: 1,
+            isFadingOut: false,
             requiresInteraction: false,
 
             // YouTube timer (seconds)
@@ -26,13 +28,13 @@ const useRockolaStore = create(
 
             // Idle autoplay settings
             idleEnabled: true,
-            idleTimeoutMin: 2,          // minutes of inactivity before autoplay (0 credits)
-            idleTimeoutCreditsMin: 3,   // minutes to wait when credits exist
-            idleTimeoutPausedSec: 60,   // seconds to wait when manually paused
-            idleDurationSec: 25,        // seconds each random preview plays
-            idleSources: ['audio', 'video', 'youtube'], // which sources to use
-            idleActive: false,          // whether idle mode is currently running
-            idleStopOnNav: false,       // Stop autoplay when a user navigates between menus
+            idleTimeoutMin: 2,
+            idleTimeoutCreditsMin: 3,
+            idleTimeoutPausedSec: 60,
+            idleDurationSec: 25,
+            idleSources: ['audio', 'video', 'youtube'],
+            idleActive: false,
+            idleStopOnNav: false,
 
             // Key mapping
             keyBindings: {
@@ -88,9 +90,16 @@ const useRockolaStore = create(
 
             // Actions — Credits
             insertCoin: () => {
-                const { creditsPerCoin } = get();
+                const { creditsPerCoin, idleActive, isFadingOut } = get();
                 set((state) => ({ credits: state.credits + creditsPerCoin }));
+                
+                if (idleActive && !isFadingOut) {
+                    window.dispatchEvent(new CustomEvent('TRIGGER_IDLE_FADEOUT'));
+                }
             },
+
+            setIdleVolume: (vol) => set({ idleVolume: vol }),
+            setIsFadingOut: (val) => set({ isFadingOut: val }),
 
             consumeCredit: () => {
                 const { credits, pricePerSong, adminMode } = get();

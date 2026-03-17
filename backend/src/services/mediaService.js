@@ -68,11 +68,16 @@ async function scanDirectory(dirPath, type = 'audio') {
                     }
 
                     let duration = 0;
+                    let replayGain = 0; // Fase 4: ReplayGain
                     if (type === 'audio' || type === 'video' || type === 'karaoke') {
                         try {
                             const metadata = await mm.parseFile(fullPath, { duration: true });
                             if (metadata.format && metadata.format.duration) {
                                 duration = metadata.format.duration;
+                            }
+                            // Fase 4: Extract ReplayGain (track gain)
+                            if (metadata.common && metadata.common.replaygain_track_gain) {
+                                replayGain = parseFloat(metadata.common.replaygain_track_gain) || 0;
                             }
                         } catch (e) {
                             // Ignorar error si el archivo no se pudo parsear
@@ -86,9 +91,12 @@ async function scanDirectory(dirPath, type = 'audio') {
                         artist,
                         genre: currentGenre,
                         path: fullPath,
-                        artwork: folderArtwork, // Asignar la carátula local si existe
+                        artwork: folderArtwork,
                         size: stat.size,
                         duration,
+                        replayGain, // Fase 4
+                        playCount: 0, // Fase 3
+                        isBlocked: false, // Fase 3
                         type,
                         extension: ext,
                     });

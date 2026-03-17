@@ -1,0 +1,415 @@
+[
+  {
+    "fileId": "idle-1773825968570",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CCHICHA%5CLos%20Ponnys%5CLos%20Ponnys%20-%20Maldita%20Traicion%20(Dj%20Dead%20Percapella%20Intro).mp3",
+    "errorType": "error_4",
+    "errorMessage": "MEDIA_ELEMENT_ERROR: Player load failure: error creating media player",
+    "timestamp": "2026-03-18T09:26:08.778Z"
+  },
+  {
+    "fileId": "idle-1773825968570",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CCHICHA%5CLos%20Ponnys%5CLos%20Ponnys%20-%20Maldita%20Traicion%20(Dj%20Dead%20Percapella%20Intro).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:26:13.664Z"
+  },
+  {
+    "fileId": "idle-1773825975823",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CGUARACHA%5CProyecto%20Uno%2C%20Pitbull%5CProyecto%20Uno%2C%20Pitbull%20-%20Esta%20Pegao%20Vs%20Hotel%20Room%20(Dj%20Underblasth%20Guaracha%20House%20Bootleg).mp3",
+    "errorType": "error_4",
+    "errorMessage": "MEDIA_ELEMENT_ERROR: Player load failure: error creating media player",
+    "timestamp": "2026-03-18T09:26:16.068Z"
+  },
+  {
+    "fileId": "idle-1773825975823",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CGUARACHA%5CProyecto%20Uno%2C%20Pitbull%5CProyecto%20Uno%2C%20Pitbull%20-%20Esta%20Pegao%20Vs%20Hotel%20Room%20(Dj%20Underblasth%20Guaracha%20House%20Bootleg).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:26:20.949Z"
+  },
+  {
+    "fileId": "idle-1773825983105",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CREGGAETON%5CDei%20V%5CDei%20V%20-%20Volvio%20El%20Perreo%20(Dj%20Mvp%20Reggaeton%20Intro%20Outro).mp3",
+    "errorType": "error_4",
+    "errorMessage": "MEDIA_ELEMENT_ERROR: Player load failure: error creating media player",
+    "timestamp": "2026-03-18T09:26:23.320Z"
+  },
+  {
+    "fileId": "idle-1773825983105",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CREGGAETON%5CDei%20V%5CDei%20V%20-%20Volvio%20El%20Perreo%20(Dj%20Mvp%20Reggaeton%20Intro%20Outro).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:26:28.222Z"
+  },
+  {
+    "fileId": "idle-1773825990382",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CGUARACHA%5CKaleb%20Di%20Masi%2C%20Rvfv%2C%20Sfera%20Ebbasta%2C%20Omar%20Varela%5CKaleb%20Di%20Masi%2C%20Rvfv%2C%20Sfera%20Ebbasta%2C%20Omar%20Varela%20-%20Hace%20Calor%20(Intro%20Breakdown%20Funk%20Brazilian%20Dj%20Kenny%20Flow%20Er%20Vrs).mp3",
+    "errorType": "error_4",
+    "errorMessage": "MEDIA_ELEMENT_ERROR: Player load failure: error creating media player",
+    "timestamp": "2026-03-18T09:26:30.584Z"
+  },
+  {
+    "fileId": "idle-1773825990382",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CGUARACHA%5CKaleb%20Di%20Masi%2C%20Rvfv%2C%20Sfera%20Ebbasta%2C%20Omar%20Varela%5CKaleb%20Di%20Masi%2C%20Rvfv%2C%20Sfera%20Ebbasta%2C%20Omar%20Varela%20-%20Hace%20Calor%20(Intro%20Breakdown%20Funk%20Brazilian%20Dj%20Kenny%20Flow%20Er%20Vrs).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:26:35.502Z"
+  },
+  {
+    "fileId": "idle-1773825997646",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CREGGAETON%5CNio%20Garcia%5CNio%20Garcia%20-%20Luz%20(Dj%20Kary%20D%20Intro%20Outro).mp3",
+    "errorType": "error_4",
+    "errorMessage": "MEDIA_ELEMENT_ERROR: Player load failure: error creating media player",
+    "timestamp": "2026-03-18T09:26:37.843Z"
+  },
+  {
+    "fileId": "idle-1773825997646",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CREGGAETON%5CNio%20Garcia%5CNio%20Garcia%20-%20Luz%20(Dj%20Kary%20D%20Intro%20Outro).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:26:42.986Z"
+  },
+  {
+    "fileId": "idle-1773826005934",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CROCK%2080s%5CEarth%2C%20Wind%20y%20Fire%5CEarth%2C%20Wind%20y%20Fire%20-%20Lets%20Groove%20(Short%20Edit%20Extended%202024).mp3",
+    "errorType": "error_4",
+    "errorMessage": "MEDIA_ELEMENT_ERROR: Player load failure: error creating media player",
+    "timestamp": "2026-03-18T09:26:46.958Z"
+  },
+  {
+    "fileId": "idle-1773826010002",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CGUARACHA%5CJ%20Balvin%2C%20Benny%20Jamz%2C%20Gilli%5CJ%20Balvin%2C%20Benny%20Jamz%2C%20Gilli%20-%20Reposado%20Remix%20(Cesar%20Castilla%20Acapella%20Break%20Dirty%20Short).mp3",
+    "errorType": "error_4",
+    "errorMessage": "MEDIA_ELEMENT_ERROR: Player load failure: error creating media player",
+    "timestamp": "2026-03-18T09:26:50.966Z"
+  },
+  {
+    "fileId": "idle-1773826005934",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CROCK%2080s%5CEarth%2C%20Wind%20y%20Fire%5CEarth%2C%20Wind%20y%20Fire%20-%20Lets%20Groove%20(Short%20Edit%20Extended%202024).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:26:52.208Z"
+  },
+  {
+    "fileId": "idle-1773826013994",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CSALSA%5CKarol%20G%5CKarol%20G%20-%20Se%20Puso%20Linda%20(Dj%20Caplay%20Salsa%20Remix%20Clean).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:26:59.970Z"
+  },
+  {
+    "fileId": "idle-1773826020938",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CCARNAVAL%20AYACUCHANO%20Y%20CAJAMARQUINO%5CDra%5CDra%20-%20Carnaval%20Huamachuquino%20(Banda%20Dj%20Lacky%202022).wav",
+    "errorType": "error_4",
+    "errorMessage": "MEDIA_ELEMENT_ERROR: Player load failure: error creating media player",
+    "timestamp": "2026-03-18T09:27:01.950Z"
+  },
+  {
+    "fileId": "idle-1773826020938",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CCARNAVAL%20AYACUCHANO%20Y%20CAJAMARQUINO%5CDra%5CDra%20-%20Carnaval%20Huamachuquino%20(Banda%20Dj%20Lacky%202022).wav",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:27:06.973Z"
+  },
+  {
+    "fileId": "idle-1773826028937",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CREGGAETON%5CBzrp%2C%20Nathy%20Peluso%2C%20Daddy%20Yankee%5CBzrp%2C%20Nathy%20Peluso%2C%20Daddy%20Yankee%20-%20Sessions%2036%20Vs%20Rompe%20(Dj%20William%20Valdivia%20Mashup%20Especial%20Soltera).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:27:14.965Z"
+  },
+  {
+    "fileId": "idle-1773826035933",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CELECTRO%5CPitbull%5CPitbull%20-%20I%20Know%20You%20Want%20Me%20(Matias%20Crow%20Tribal%20House%20Mix).mp3",
+    "errorType": "error_4",
+    "errorMessage": "MEDIA_ELEMENT_ERROR: Player load failure: error creating media player",
+    "timestamp": "2026-03-18T09:27:16.955Z"
+  },
+  {
+    "fileId": "idle-1773826035933",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CELECTRO%5CPitbull%5CPitbull%20-%20I%20Know%20You%20Want%20Me%20(Matias%20Crow%20Tribal%20House%20Mix).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:27:21.981Z"
+  },
+  {
+    "fileId": "idle-1773826043929",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CGUARACHA%5CMiguel%20Diaz%5CMiguel%20Diaz%20-%20Veneno%20De%20Serpiente%20(Dj%20Rolando%20Rodriguez%20Remix).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:27:29.966Z"
+  },
+  {
+    "fileId": "idle-1773826050935",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CREGGAETON%5CNio%20Garcia%5CNio%20Garcia%20-%20Luz%20(Dj%20Kary%20D%20Intro%20Outro).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:27:36.972Z"
+  },
+  {
+    "fileId": "idle-1773826057933",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CELECTRO%5CWasabi%20Ft%20Gioc%5CWasabi%20Ft%20Gioc%20-%20Panamericano%20(Original%20Mix).mp3",
+    "errorType": "error_4",
+    "errorMessage": "MEDIA_ELEMENT_ERROR: Player load failure: error creating media player",
+    "timestamp": "2026-03-18T09:27:38.956Z"
+  },
+  {
+    "fileId": "idle-1773826057933",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CELECTRO%5CWasabi%20Ft%20Gioc%5CWasabi%20Ft%20Gioc%20-%20Panamericano%20(Original%20Mix).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:27:43.961Z"
+  },
+  {
+    "fileId": "idle-1773826071935",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CREGGAETON%5CArcangel%2C%20Sech%2C%20Kapo%5CArcangel%2C%20Sech%2C%20Kapo%20-%20Te%20Extra%C3%B1o%20(Alfonzo%20Andrade%20Acapella%20Break%20Dirty%20Short).mp3",
+    "errorType": "error_4",
+    "errorMessage": "MEDIA_ELEMENT_ERROR: Player load failure: error creating media player",
+    "timestamp": "2026-03-18T09:27:52.963Z"
+  },
+  {
+    "fileId": "idle-1773826076003",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CCARNAVAL%20AYACUCHANO%20Y%20CAJAMARQUINO%5CYumpay%5CYumpay%20-%20Carnavales%20De%20Mi%20Tierra%20(Intro%20Hechale%20Agua%20In%20Ok%20Dj%20Rosmyl%20Eq).mp3",
+    "errorType": "error_4",
+    "errorMessage": "MEDIA_ELEMENT_ERROR: Player load failure: error creating media player",
+    "timestamp": "2026-03-18T09:27:56.956Z"
+  },
+  {
+    "fileId": "idle-1773826071935",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CREGGAETON%5CArcangel%2C%20Sech%2C%20Kapo%5CArcangel%2C%20Sech%2C%20Kapo%20-%20Te%20Extra%C3%B1o%20(Alfonzo%20Andrade%20Acapella%20Break%20Dirty%20Short).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:27:58.238Z"
+  },
+  {
+    "fileId": "idle-1773826080010",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CREGGAETON%5CDe%20La%20Rose%5CDe%20La%20Rose%20-%20Yo%20Te%20Conozco%20(Dj%20William%20Valdivia%20In%20Aca).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:28:05.988Z"
+  },
+  {
+    "fileId": "idle-1773826086929",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CREGGAETON%5CNova%2C%20Jory%2C%20Bad%20Bunny%2C%20Omar%20Courtz%2C%20Dei%20V%5CNova%2C%20Jory%2C%20Bad%20Bunny%2C%20Omar%20Courtz%2C%20Dei%20V%20-%20Bien%20Loco%20Vs%20Veldaa%20(Mashup%20Intro%20Dj%20Bruce%20Prime%20Mix%20Io).mp3",
+    "errorType": "error_4",
+    "errorMessage": "MEDIA_ELEMENT_ERROR: Player load failure: error creating media player",
+    "timestamp": "2026-03-18T09:28:07.949Z"
+  },
+  {
+    "fileId": "idle-1773826086929",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CREGGAETON%5CNova%2C%20Jory%2C%20Bad%20Bunny%2C%20Omar%20Courtz%2C%20Dei%20V%5CNova%2C%20Jory%2C%20Bad%20Bunny%2C%20Omar%20Courtz%2C%20Dei%20V%20-%20Bien%20Loco%20Vs%20Veldaa%20(Mashup%20Intro%20Dj%20Bruce%20Prime%20Mix%20Io).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:28:12.969Z"
+  },
+  {
+    "fileId": "idle-1773826094935",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CCARNAVAL%20AYACUCHANO%20Y%20CAJAMARQUINO%5CDon%20Guillermo%20y%20Su%20Conjunto%5CDon%20Guillermo%20y%20Su%20Conjunto%20-%20El%20Cilulo%2C%20El%20Gavilan%20(Yesenia%20Danze%20Edit%202018).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:28:20.968Z"
+  },
+  {
+    "fileId": "idle-1773826101966",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CGUARACHA%5CDj%20Xteven%5CDj%20Xteven%20-%20Put%20Your%20Hands%20Up%20(Guaracha%20Mix).mp3",
+    "errorType": "error_4",
+    "errorMessage": "MEDIA_ELEMENT_ERROR: Player load failure: error creating media player",
+    "timestamp": "2026-03-18T09:28:22.956Z"
+  },
+  {
+    "fileId": "idle-1773826101966",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CGUARACHA%5CDj%20Xteven%5CDj%20Xteven%20-%20Put%20Your%20Hands%20Up%20(Guaracha%20Mix).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:28:27.973Z"
+  },
+  {
+    "fileId": "idle-1773826109933",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CCHICHA%5CBatahola%5CBatahola%20-%20Dulce%20Cari%C3%B1ito%20(Dj%20Mateo%20Zumba%20Intro).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:28:35.970Z"
+  },
+  {
+    "fileId": "idle-1773826116938",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CELECTRO%5CTrace%5CTrace%20-%20Selecta%20(Original%20Mix).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:28:42.965Z"
+  },
+  {
+    "fileId": "idle-1773826123930",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CELECTRO%5CJuan%20Magan%20Ft%20Pitbull%20y%20El%20Cata%5CJuan%20Magan%20Ft%20Pitbull%20y%20El%20Cata%20-%20Bailando%20Por%20El%20Mundo%20(Extended).mp3",
+    "errorType": "error_4",
+    "errorMessage": "MEDIA_ELEMENT_ERROR: Player load failure: error creating media player",
+    "timestamp": "2026-03-18T09:28:44.949Z"
+  },
+  {
+    "fileId": "idle-1773826123930",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CELECTRO%5CJuan%20Magan%20Ft%20Pitbull%20y%20El%20Cata%5CJuan%20Magan%20Ft%20Pitbull%20y%20El%20Cata%20-%20Bailando%20Por%20El%20Mundo%20(Extended).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:28:49.965Z"
+  },
+  {
+    "fileId": "idle-1773826131927",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CELECTRO%5CTimbee%5CTimbee%20-%20Yeka%20Tribe%20(Tom%20y%20Mikey%20R).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:28:57.961Z"
+  },
+  {
+    "fileId": "idle-1773826138930",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CMICHAEL%20JACKSON%5CPaul%20McCartney%2C%20Michael%20Jackson%5CPaul%20McCartney%2C%20Michael%20Jackson%20-%20Say%20Say%20Say%20Io%2083%20(Leon%20Mix).mp3",
+    "errorType": "error_4",
+    "errorMessage": "MEDIA_ELEMENT_ERROR: Player load failure: error creating media player",
+    "timestamp": "2026-03-18T09:28:59.953Z"
+  },
+  {
+    "fileId": "idle-1773826138930",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CMICHAEL%20JACKSON%5CPaul%20McCartney%2C%20Michael%20Jackson%5CPaul%20McCartney%2C%20Michael%20Jackson%20-%20Say%20Say%20Say%20Io%2083%20(Leon%20Mix).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:29:04.974Z"
+  },
+  {
+    "fileId": "idle-1773826146933",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CELECTRO%5CNina%20Sky%5CNina%20Sky%20-%20Move%20Ya%20Body%20(Kamdar%20y%20Temet%20R).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:29:12.958Z"
+  },
+  {
+    "fileId": "idle-1773826153935",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CROCK%2080s%5CEarth%2C%20Wind%20y%20Fire%5CEarth%2C%20Wind%20y%20Fire%20-%20Lets%20Groove%20(Short%20Edit%20Extended%202024).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:29:19.971Z"
+  },
+  {
+    "fileId": "idle-1773826160938",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CGUARACHA%5CJowell%20y%20Randy%5CJowell%20y%20Randy%20-%20Bailalo%20a%20Lo%20Loco%20(Dj%20Xteven%20Guaracha%20Short%20Remix).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:29:26.962Z"
+  },
+  {
+    "fileId": "idle-1773826167930",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CREGGAETON%5CBe%C3%A9le%2C%20Quevedo%2C%20Ovy%20On%20The%20Drums%5CBe%C3%A9le%2C%20Quevedo%2C%20Ovy%20On%20The%20Drums%20-%20Yo%20y%20T%C3%BA%20(Dj%20Wos%20In%20Aca).mp3",
+    "errorType": "error_4",
+    "errorMessage": "MEDIA_ELEMENT_ERROR: Player load failure: error creating media player",
+    "timestamp": "2026-03-18T09:29:28.954Z"
+  },
+  {
+    "fileId": "idle-1773826167930",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CREGGAETON%5CBe%C3%A9le%2C%20Quevedo%2C%20Ovy%20On%20The%20Drums%5CBe%C3%A9le%2C%20Quevedo%2C%20Ovy%20On%20The%20Drums%20-%20Yo%20y%20T%C3%BA%20(Dj%20Wos%20In%20Aca).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:29:33.969Z"
+  },
+  {
+    "fileId": "idle-1773826175929",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CSALSA%5CWilly%20Chirino%5CWilly%20Chirino%20-%20Ox%C3%ADgeno%20(Dj%20Kary%20D%20Intro%20Outro).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:29:41.967Z"
+  },
+  {
+    "fileId": "idle-1773826182932",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CCARNAVAL%20AYACUCHANO%20Y%20CAJAMARQUINO%5CGaitan%20Castro%5CGaitan%20Castro%20-%20Amor%20Aventurero%20(Ventu%2026).wav",
+    "errorType": "error_4",
+    "errorMessage": "MEDIA_ELEMENT_ERROR: Player load failure: error creating media player",
+    "timestamp": "2026-03-18T09:29:43.960Z"
+  },
+  {
+    "fileId": "idle-1773826182932",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CCARNAVAL%20AYACUCHANO%20Y%20CAJAMARQUINO%5CGaitan%20Castro%5CGaitan%20Castro%20-%20Amor%20Aventurero%20(Ventu%2026).wav",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:29:48.961Z"
+  },
+  {
+    "fileId": "idle-1773826189929",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CELECTRO%5CMichael%20Jackson%5CMichael%20Jackson%20-%20Dont%20Stop%20Til%20You%20Get%20Enough%20Vs%20Feel%20It%20Ya%20(Jordan%20Dae%20y%20Nick%20Roberts%20Mashup).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:29:55.974Z"
+  },
+  {
+    "fileId": "idle-1773826196929",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CCARNAVAL%20AYACUCHANO%20Y%20CAJAMARQUINO%5CLa%20Patronal%5CLa%20Patronal%20-%20Carnaval%20De%20Cajamarca%20(Open%20Banda%20Jordin%20Silva%20Jastx%2024).mp3",
+    "errorType": "error_4",
+    "errorMessage": "MEDIA_ELEMENT_ERROR: Player load failure: error creating media player",
+    "timestamp": "2026-03-18T09:29:57.960Z"
+  },
+  {
+    "fileId": "idle-1773826196929",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CCARNAVAL%20AYACUCHANO%20Y%20CAJAMARQUINO%5CLa%20Patronal%5CLa%20Patronal%20-%20Carnaval%20De%20Cajamarca%20(Open%20Banda%20Jordin%20Silva%20Jastx%2024).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:30:02.961Z"
+  },
+  {
+    "fileId": "idle-1773826210936",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CROCK%2080s%5CDons%2C%20Technotronic%5CDons%2C%20Technotronic%20-%20Pump%20Up%20The%20Jam%20(Onne%20Edit%20Acapella%20Direct%20Intro%202k24).mp3",
+    "errorType": "error_4",
+    "errorMessage": "MEDIA_ELEMENT_ERROR: Player load failure: error creating media player",
+    "timestamp": "2026-03-18T09:30:13.617Z"
+  },
+  {
+    "fileId": "idle-1773826210936",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CROCK%2080s%5CDons%2C%20Technotronic%5CDons%2C%20Technotronic%20-%20Pump%20Up%20The%20Jam%20(Onne%20Edit%20Acapella%20Direct%20Intro%202k24).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:30:21.908Z"
+  },
+  {
+    "fileId": "idle-1773826216007",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CREGGAETON%5CEl%20Bogueto%2C%20Varios%5CEl%20Bogueto%2C%20Varios%20-%20Cuando%20No%20Era%20Cantante%20Remix%20(Dj%20Jremix%20Reggaeton%20Intro%20Verse%20Outro).mp3",
+    "errorType": "error_4",
+    "errorMessage": "MEDIA_ELEMENT_ERROR: Player load failure: error creating media player",
+    "timestamp": "2026-03-18T09:30:23.223Z"
+  },
+  {
+    "fileId": "idle-1773826224024",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CSALSA%5COscar%20D%20Leon%5COscar%20D%20Leon%20-%20Que%20Bueno%20Baila%20Usted%20(Jpthe%20Dj%20Acapella%20Break%20Clean%20Short).mp3",
+    "errorType": "error_4",
+    "errorMessage": "MEDIA_ELEMENT_ERROR: Player load failure: error creating media player",
+    "timestamp": "2026-03-18T09:30:31.102Z"
+  },
+  {
+    "fileId": "idle-1773826216007",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CREGGAETON%5CEl%20Bogueto%2C%20Varios%5CEl%20Bogueto%2C%20Varios%20-%20Cuando%20No%20Era%20Cantante%20Remix%20(Dj%20Jremix%20Reggaeton%20Intro%20Verse%20Outro).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:30:39.961Z"
+  },
+  {
+    "fileId": "idle-1773826240026",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CELECTRO%5CCrazy%20Design%5CCrazy%20Design%20-%20Poron%20Pompon%20(R%20Edit).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T09:30:58.758Z"
+  },
+  {
+    "fileId": "idle-1773826250029",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CREGGAETON%5CYandel%2C%20J%20Balvin%5CYandel%2C%20J%20Balvin%20-%20Sin%20Verg%C3%BCenza%20(Dj%20Danny%20Intro%20Outro).mp3",
+    "errorType": "error_4",
+    "errorMessage": "MEDIA_ELEMENT_ERROR: Player load failure: error creating media player",
+    "timestamp": "2026-03-18T09:30:58.876Z"
+  },
+  {
+    "fileId": "idle-1773826250029",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CREGGAETON%5CYandel%2C%20J%20Balvin%5CYandel%2C%20J%20Balvin%20-%20Sin%20Verg%C3%BCenza%20(Dj%20Danny%20Intro%20Outro).mp3",
+    "errorType": "stalled_timeout",
+    "errorMessage": "Media stalled for more than 5 seconds",
+    "timestamp": "2026-03-18T21:45:52.427Z"
+  },
+  {
+    "fileId": "idle-1773870352602",
+    "filePath": "http://localhost:4000/api/media/stream?path=C%3A%5CUsers%5Cedgar%5COneDrive%5CDocumentos%5CTRAE%5Crockola%5Cmusic%5CCARNAVAL%20AYACUCHANO%20Y%20CAJAMARQUINO%5CMartin%20Vera%5CMartin%20Vera%20-%20Mi%20Amor%20Tan%20Bello%20(Lopez%20Edits%202024).wav",
+    "errorType": "error_4",
+    "errorMessage": "MEDIA_ELEMENT_ERROR: Player load failure: error creating media player",
+    "timestamp": "2026-03-18T21:45:52.807Z"
+  }
+]

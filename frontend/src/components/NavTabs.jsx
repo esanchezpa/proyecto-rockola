@@ -17,12 +17,16 @@ export default function NavTabs() {
     const focusZone = useRockolaStore((s) => s.focusZone);
     const setFocusZone = useRockolaStore((s) => s.setFocusZone);
     const keyBindings = useRockolaStore((s) => s.keyBindings);
+    const selectedGenre = useRockolaStore((s) => s.selectedGenre);
+
+    // Si hay un género seleccionado, mostrar 'genero' como activo
+    const effectiveActiveTab = selectedGenre ? 'genero' : activeTab;
 
     const handleKeyDown = useCallback((e) => {
         if (focusZone !== 'nav') return;
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
-        const currentIdx = TABS.findIndex((t) => t.id === activeTab);
+        const currentIdx = TABS.findIndex((t) => t.id === effectiveActiveTab);
         const { up, down, left, right, select } = keyBindings;
 
         if (e.code === right || e.key === right) {
@@ -55,7 +59,7 @@ export default function NavTabs() {
         } else {
             return;
         }
-    }, [focusZone, activeTab, setActiveTab, setFocusZone, keyBindings]);
+    }, [focusZone, effectiveActiveTab, setActiveTab, setFocusZone, keyBindings, activeTab]);
 
     useEffect(() => {
         window.addEventListener('keydown', handleKeyDown, true);
@@ -67,7 +71,7 @@ export default function NavTabs() {
             {TABS.map((tab) => (
                 <button
                     key={tab.id}
-                    className={`nav-tab ${activeTab === tab.id ? 'active' : ''}`}
+                    className={`nav-tab ${effectiveActiveTab === tab.id ? 'active' : ''}`}
                     data-tab={tab.id}
                     onClick={() => setActiveTab(tab.id)}
                 >

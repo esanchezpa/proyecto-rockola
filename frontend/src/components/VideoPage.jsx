@@ -177,6 +177,8 @@ export default function VideoPage() {
                             e.preventDefault();
                             setFocusZone('nav');
                             e.target.blur();
+                        } else if (e.key === 'ArrowRight' && searchTerm.length > 0) {
+                            e.preventDefault();
                         }
                     }}
                     onFocus={() => {
@@ -187,11 +189,12 @@ export default function VideoPage() {
                         padding: '14px 20px',
                         borderRadius: 8,
                         border: focusZone === 'search' ? '2px solid var(--accent-blue)' : '2px solid transparent',
+                        boxShadow: focusZone === 'search' ? '0 0 12px var(--accent-blue)' : 'none',
                         backgroundColor: 'var(--surface-color)',
                         color: 'var(--text-primary)',
                         fontSize: 16,
                         outline: 'none',
-                        transition: 'border-color 0.2s',
+                        transition: 'all 0.2s',
                     }}
                 />
             </div>
@@ -218,8 +221,9 @@ export default function VideoPage() {
                             return (
                                 <div
                                     key={file.id}
-                                    className={`audio-list-item ${isSelected && focusZone === 'grid' ? 'selected' : ''}`}
+                                    className={`audio-list-item ${isSelected ? 'selected' : ''}`}
                                     onClick={() => handleSelect(globalIdx)}
+                                    style={{ display: 'flex', alignItems: 'center', opacity: focusZone === 'search' ? 0.6 : 1 }}
                                 >
                                     <div className="audio-list-info">
                                         <div className="audio-list-title" title={title}>

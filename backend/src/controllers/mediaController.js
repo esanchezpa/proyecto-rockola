@@ -4,9 +4,107 @@ const { getSettings } = require('../config/settingsManager');
 const { scanDirectory, getMimeType, searchMediaCache, initializeMediaCache, getUniqueGenres, getArtistsByGenre } = require('../services/mediaService');
 const mm = require('music-metadata');
 
+const ERROR_LOG_PATH = path.join(__dirname, '../../media-errors.json');
+const BLOCKED_STATE_PATH = path.join(__dirname, '../../media-blocked.json');
+
+function loadBlockedState() {
+    try {
+        if (fs.existsSync(BLOCKED_STATE_PATH)) {
+            return JSON.parse(fs.readFileSync(BLOCKED_STATE_PATH, 'utf8'));
+        }
+    } catch (e) {
+        console.error('Error loading blocked state:', e.message);
+    }
+    return {};
+}
+
+function saveBlockedState(state) {
+    try {
+        fs.writeFileSync(BLOCKED_STATE_PATH, JSON.stringify(state, null, 2));
+    } catch (e) {
+        console.error('Error saving blocked state:', e.message);
+    }
+}
+
+function loadErrorLog() {
+    try {
+        if (fs.existsSync(ERROR_LOG_PATH)) {
+            return JSON.parse(fs.readFileSync(ERROR_LOG_PATH, 'utf8'));
+        }
+    } catch (e) {
+        console.error('Error loading error log:', e.message);
+    }
+    return [];
+}
+
+function saveErrorLog(errors) {
+    try {
+        fs.writeFileSync(ERROR_LOG_PATH, JSON.stringify(errors, null, 2));
+    } catch (e) {
+        console.error('Error saving error log:', e.message);
+    }
+}
+
+async function logError(req, res) {
+    try {
+        const { fileId, filePath, errorType, errorMessage, timestamp } = req.body;
+        
+        const errors = loadErrorLog();
+        errors.push({
+            fileId,
+            filePath,
+            errorType,
+            errorMessage,
+            timestamp: timestamp || new Date().toISOString()
+        });
+        
+        saveErrorLog(errors);
+        
+        console.log(`[MEDIA ERROR LOGGED] ${filePath} - ${errorType}: ${errorMessage}`);
+        
+        res.status(200).json({ success: true, message: 'Error logged successfully' });
+    } catch (err) {
+        res.status(500).json({ error: 'Error al registrar error', details: err.message });
+    }
+}
+
+// Fase 3: Increment play count
+async function incrementPlayCount(req, res) {
+    try {
+        const { filePath } = req.body;
+        if (!filePath) return res.status(400).json({ error: 'Se requiere filePath' });
+        
+        const state = loadBlockedState();
+        const key = `${filePath}_playCount`;
+        state[key] = (state[key] || 0) + 1;
+        saveBlockedState(state);
+        
+        res.status(200).json({ success: true, playCount: state[key] });
+    } catch (err) {
+        res.status(500).json({ error: 'Error al incrementar play count', details: err.message });
+    }
+}
+
+// Fase 3: Toggle block status
+async function toggleBlock(req, res) {
+    try {
+        const { filePath, isBlocked } = req.body;
+        if (!filePath) return res.status(400).json({ error: 'Se requiere filePath' });
+        
+        const state = loadBlockedState();
+        state[filePath] = isBlocked;
+        saveBlockedState(state);
+        
+        res.status(200).json({ success: true, isBlocked });
+    } catch (err) {
+        res.status(500).json({ error: 'Error al cambiar estado de bloqueo', details: err.message });
+    }
+}
+
 async function listMedia(req, res) {
     try {
         const type = req.query.type || 'audio';
+        const excludeBlocked = req.query.excludeBlocked === 'true';
         const settings = getSettings();
 
         let dirPath;
@@ -17,7 +115,21 @@ async function listMedia(req, res) {
             default: dirPath = settings.audioPath;
         }
 
-        const files = await scanDirectory(dirPath, type);
+        let files = await scanDirectory(dirPath, type);
+        
+        // Fase 3: Cargar estado de bloqueo desde archivo
+        const blockedState = loadBlockedState();
+        files = files.map(f => ({
+            ...f,
+            isBlocked: blockedState[f.path] || false,
+            playCount: blockedState[`${f.path}_playCount`] || 0
+        }));
+
+        // Fase 3: Excluir bloqueados si se pide
+        if (excludeBlocked) {
+            files = files.filter(f => !f.isBlocked);
+        }
+
         res.json(files);
     } catch (err) {
         res.status(500).json({ error: 'Error al listar medios', details: err.message });
@@ -157,4 +269,4 @@ function getArtists(req, res) {
     }
 }
 
-module.exports = { listMedia, streamMedia, getCover, searchMedia, refreshCache, getGenres, getArtists };
+module.exports = { listMedia, streamMedia, getCover, searchMedia, refreshCache, getGenres, getArtists, logError, incrementPlayCount, toggleBlock };

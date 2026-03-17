@@ -9,7 +9,7 @@ export const getConfig = () => api.get('/config').then(r => r.data);
 
 export const updateConfig = (data) => api.post('/config', data).then(r => r.data);
 
-export const getMedia = (type = 'audio') => api.get(`/media?type=${type}`).then(r => r.data);
+export const getMedia = (type = 'audio', excludeBlocked = true) => api.get(`/media?type=${type}&excludeBlocked=${excludeBlocked}`).then(r => r.data);
 
 export const searchLocalMedia = (query, type = 'audio', limit = 20, genre = '', artist = '') => {
     let url = `/media/search?q=${encodeURIComponent(query)}&type=${type}&limit=${limit}`;
@@ -42,5 +42,14 @@ export const getYouTubeSuggestions = (query) =>
 
 export const searchAudioDB = (artist) =>
     api.get(`/audiodb/search?s=${encodeURIComponent(artist)}`).then(r => r.data);
+
+export const logMediaError = (fileId, filePath, errorType, errorMessage) =>
+    api.post('/media/log-error', { fileId, filePath, errorType, errorMessage }).then(r => r.data);
+
+export const incrementPlayCount = (filePath) =>
+    api.post('/media/play-count', { filePath }).then(r => r.data);
+
+export const toggleBlock = (filePath, isBlocked) =>
+    api.post('/media/toggle-block', { filePath, isBlocked }).then(r => r.data);
 
 export default api;
