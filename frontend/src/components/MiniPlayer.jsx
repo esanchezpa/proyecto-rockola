@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import useRockolaStore from '../store/useRockolaStore';
+import { logMediaError } from '../api/rockolaApi';
 
 const IMAGES = [
     '/images/concert_stage.png',
@@ -33,10 +34,12 @@ export default function MiniPlayer() {
     const [progress, setProgress] = useState(0);
     const [currentTime, setCurrentTime] = useState('00:00');
     const [selectedControl, setSelectedControl] = useState(0); // 0=play, 1=next
-    const [toast, setToast] = useState(null);
+const [toast, setToast] = useState(null);
     const mediaRef = useRef(null);
     const prevTrackId = useRef(null);
     const ytIframeRef = useRef(null);
+    const stallTimeoutRef = useRef(null);
+    const isCurrentlyStalled = useRef(false);
 
     const isVideo = currentTrack?.type === 'video';
     const isYouTube = currentTrack?.type === 'youtube';
@@ -188,9 +191,62 @@ export default function MiniPlayer() {
         }
     }, []);
 
-    const handleEnded = useCallback(() => {
+const handleEnded = useCallback(() => {
         nextTrack();
     }, [nextTrack]);
+
+    const handleMediaError = useCallback((e, track) => {
+        console.error('Media error:', e);
+        
+        const errorMsg = e.target?.error?.message || 'Unknown error';
+        const errorType = e.target?.error?.code || 'unknown';
+        
+        setToast('⚠️ Error en archivo, saltando...');
+        
+        logMediaError(
+            track?.id || 'unknown',
+            track?.sourceUrl || '',
+            `error_${errorType}`,
+            errorMsg
+        ).catch(() => {});
+        
+        setTimeout(() => {
+            setToast(null);
+            nextTrack();
+        }, 2000);
+    }, [nextTrack]);
+
+    const handleStalled = useCallback((e, track) => {
+        console.warn('Media stalled:', e);
+        if (isCurrentlyStalled.current) return;
+        
+        isCurrentlyStalled.current = true;
+        
+        clearTimeout(stallTimeoutRef.current);
+        stallTimeoutRef.current = setTimeout(() => {
+            console.warn('Media stalled for 5+ seconds, skipping...');
+            setToast('⏳ Archivo lento, saltando...');
+            
+            logMediaError(
+                track?.id || 'unknown',
+                track?.sourceUrl || '',
+                'stalled_timeout',
+                'Media stalled for more than 5 seconds'
+            ).catch(() => {});
+            
+            setTimeout(() => {
+                setToast(null);
+                nextTrack();
+            }, 2000);
+            
+            isCurrentlyStalled.current = false;
+        }, 5000);
+    }, [nextTrack]);
+
+    const handleCanPlay = useCallback(() => {
+        clearTimeout(stallTimeoutRef.current);
+        isCurrentlyStalled.current = false;
+    }, []);
 
     // YouTube IFrame Player API — reliable end detection
     const ytPlayerRef = useRef(null);
@@ -463,13 +519,17 @@ export default function MiniPlayer() {
 
     return (
         <>
-            {/* Unified media element — always mounted, just switches src */}
+{/* Unified media element — always mounted, just switches src */}
             {isAudio && (
                 <audio
                     ref={mediaRef}
                     key="audio-player"
                     onTimeUpdate={handleTimeUpdate}
                     onEnded={handleEnded}
+                    onError={(e) => handleMediaError(e, currentTrack)}
+                    onStalled={(e) => handleStalled(e, currentTrack)}
+                    onWaiting={(e) => handleStalled(e, currentTrack)}
+                    onCanPlay={handleCanPlay}
                     autoPlay
                     style={{ display: 'none' }}
                 />
@@ -483,6 +543,10 @@ export default function MiniPlayer() {
                         key={`video-${currentTrack.id}`}
                         onTimeUpdate={handleTimeUpdate}
                         onEnded={handleEnded}
+                        onError={(e) => handleMediaError(e, currentTrack)}
+                        onStalled={(e) => handleStalled(e, currentTrack)}
+                        onWaiting={(e) => handleStalled(e, currentTrack)}
+                        onCanPlay={handleCanPlay}
                         autoPlay
                         style={{ width: '100%', maxHeight: '50vh', background: '#000' }}
                         controls={false}

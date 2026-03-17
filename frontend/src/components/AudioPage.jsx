@@ -145,11 +145,12 @@ export default function AudioPage() {
 
     // Navigation logic
     const listLength = viewMode === 'list' ? songs.length : artists.length;
-    const itemsPerPage = viewMode === 'list' ? 10000 : 12; // Dejar la página ilimitada, se maneja el slice visualmente
+    const itemsPerPage = viewMode === 'list' ? 10000 : 12;
     const numColumns = viewMode === 'list' ? 1 : 4;
+    const navLayout = viewMode === 'list' ? 'vertical' : 'vertical';
 
     const { selectedIndex, page, totalPages, setPage, pageStart, pageEnd } =
-        useGridNavigation(listLength, numColumns, handleSelect, itemsPerPage);
+        useGridNavigation(listLength, numColumns, handleSelect, itemsPerPage, navLayout);
 
     // Auto-scroll to selected item & lazy loading
     useEffect(() => {
@@ -266,6 +267,9 @@ export default function AudioPage() {
                             e.preventDefault();
                             setFocusZone('nav');
                             e.target.blur();
+                        } else if (e.key === 'ArrowRight' && searchTerm.length > 0) {
+                            // Mover el cursor al final si hay texto
+                            e.preventDefault();
                         }
                     }}
                     onFocus={() => {
@@ -276,11 +280,12 @@ export default function AudioPage() {
                         padding: '14px 20px',
                         borderRadius: 8,
                         border: focusZone === 'search' ? '2px solid var(--accent-blue)' : '2px solid transparent',
+                        boxShadow: focusZone === 'search' ? '0 0 12px var(--accent-blue)' : 'none',
                         backgroundColor: 'var(--surface-color)',
                         color: 'var(--text-primary)',
                         fontSize: 16,
                         outline: 'none',
-                        transition: 'border-color 0.2s',
+                        transition: 'all 0.2s',
                     }}
                 />
             </div>
@@ -336,9 +341,9 @@ export default function AudioPage() {
                                 return (
                                     <div
                                         key={file.id}
-                                        className={`audio-list-item ${isSelected && focusZone === 'grid' ? 'selected' : ''}`}
+                                        className={`audio-list-item ${isSelected ? 'selected' : ''}`}
                                         onClick={() => handleSelect(globalIdx)}
-                                        style={{ display: 'flex', alignItems: 'center' }}
+                                        style={{ display: 'flex', alignItems: 'center', opacity: focusZone === 'search' ? 0.6 : 1 }}
                                     >
                                         <div style={{
                                             width: 48,

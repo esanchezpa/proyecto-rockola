@@ -4,6 +4,50 @@ const { getSettings } = require('../config/settingsManager');
 const { scanDirectory, getMimeType, searchMediaCache, initializeMediaCache, getUniqueGenres, getArtistsByGenre } = require('../services/mediaService');
 const mm = require('music-metadata');
 
+const ERROR_LOG_PATH = path.join(__dirname, '../../media-errors.json');
+
+function loadErrorLog() {
+    try {
+        if (fs.existsSync(ERROR_LOG_PATH)) {
+            return JSON.parse(fs.readFileSync(ERROR_LOG_PATH, 'utf8'));
+        }
+    } catch (e) {
+        console.error('Error loading error log:', e.message);
+    }
+    return [];
+}
+
+function saveErrorLog(errors) {
+    try {
+        fs.writeFileSync(ERROR_LOG_PATH, JSON.stringify(errors, null, 2));
+    } catch (e) {
+        console.error('Error saving error log:', e.message);
+    }
+}
+
+async function logError(req, res) {
+    try {
+        const { fileId, filePath, errorType, errorMessage, timestamp } = req.body;
+        
+        const errors = loadErrorLog();
+        errors.push({
+            fileId,
+            filePath,
+            errorType,
+            errorMessage,
+            timestamp: timestamp || new Date().toISOString()
+        });
+        
+        saveErrorLog(errors);
+        
+        console.log(`[MEDIA ERROR LOGGED] ${filePath} - ${errorType}: ${errorMessage}`);
+        
+        res.status(200).json({ success: true, message: 'Error logged successfully' });
+    } catch (err) {
+        res.status(500).json({ error: 'Error al registrar error', details: err.message });
+    }
+}
+
 async function listMedia(req, res) {
     try {
         const type = req.query.type || 'audio';
@@ -157,4 +201,4 @@ function getArtists(req, res) {
     }
 }
 
-module.exports = { listMedia, streamMedia, getCover, searchMedia, refreshCache, getGenres, getArtists };
+module.exports = { listMedia, streamMedia, getCover, searchMedia, refreshCache, getGenres, getArtists, logError };

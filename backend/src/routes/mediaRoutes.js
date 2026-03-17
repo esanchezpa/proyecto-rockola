@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { listMedia, streamMedia, getCover, searchMedia, refreshCache, getGenres, getArtists } = require('../controllers/mediaController');
+const { listMedia, streamMedia, getCover, searchMedia, refreshCache, getGenres, getArtists, logError } = require('../controllers/mediaController');
 
 router.get('/', listMedia);
 router.get('/play', streamMedia);   // Rutas retro-compatibles
@@ -10,5 +10,6 @@ router.post('/refresh', refreshCache);
 router.get('/genres', getGenres);
 router.get('/artists', getArtists);
 router.get('/cover', getCover);
+router.post('/log-error', logError);
 
 module.exports = router;

@@ -1,5 +1,14 @@
 {
   "audioPath": "C:\\Users\\edgar\\OneDrive\\Documentos\\TRAE\\rockola\\music",
   "videoPath": "C:\\Users\\edgar\\OneDrive\\Documentos\\TRAE\\rockola\\video",
-  "karaokePath": "C:\\Users\\edgar\\Music\\Rockola\\karaoke"
+  "karaokePath": "C:\\Users\\edgar\\Music\\Rockola\\karaoke",
+  "keyBindings": {
+    "up": "ArrowUp",
+    "down": "ArrowDown",
+    "left": "ArrowLeft",
+    "right": "ArrowRight",
+    "select": "Enter",
+    "insert_coin": "i",
+    "cancel": "Escape"
+  }
 }

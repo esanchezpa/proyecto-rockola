@@ -43,4 +43,7 @@ export const getYouTubeSuggestions = (query) =>
 export const searchAudioDB = (artist) =>
     api.get(`/audiodb/search?s=${encodeURIComponent(artist)}`).then(r => r.data);
 
+export const logMediaError = (fileId, filePath, errorType, errorMessage) =>
+    api.post('/media/log-error', { fileId, filePath, errorType, errorMessage }).then(r => r.data);
+
 export default api;
